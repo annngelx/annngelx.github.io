@@ -33,7 +33,7 @@ Then open http://localhost:8000. Opening `index.html` straight from the disk won
 
 The site uses the `annngelx` organization, managed by the `maxing999` account.
 
-- Website: https://annngelx.github.io/
+- Primary website: https://angelxu.ai/
 - Repository: https://github.com/annngelx/annngelx.github.io
 - Deployment source: GitHub Actions, configured in repository Settings > Pages.
 
@@ -47,7 +47,7 @@ git push
 
 Check the repository's Actions tab for the result. A failed build leaves the previous deployment in place. The workflow can also be run manually from that tab.
 
-For your own domain later, enter it under Settings > Pages > Custom domain, add the DNS records GitHub lists there, and change `SITE_URL` at the top of `source/build.py` to the new address. `SITE_URL` is what pages report as their full address to search engines and link previews.
+The custom domain is `angelxu.ai`, with DNS managed in Cloudflare. Its apex points to GitHub Pages, and `www` points to `annngelx.github.io`; both use DNS-only records. GitHub Pages redirects `www` and the original `annngelx.github.io` address to the primary domain. `SITE_URL` at the top of `source/build.py` supplies the canonical, language-alternate and share URLs. The GitHub Actions publishing workflow uses the repository's Pages domain setting, so it does not require a `CNAME` file.
 
 The same `site/` folder also works on Netlify, Vercel or Cloudflare Pages if you ever move.
 

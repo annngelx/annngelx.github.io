@@ -13,7 +13,7 @@ SITE = ROOT.parent / "site"
 AUTHOR = "Angel Xu"
 # Full address of the published site, no trailing slash, for example "https://angelxu.github.io"
 # or "https://yourdomain.com". Optional: when set, pages get canonical and share addresses.
-SITE_URL = "https://annngelx.github.io"
+SITE_URL = "https://angelxu.ai"
 # Profile links, shown in the About section and the footer of every page. A link appears once its address is filled in.
 LINKS = [("@angel_flowstate on X", "https://x.com/angel_flowstate"), ("LinkedIn", "")]
 ABOUT = ("Angel Xu is the founder and CEO of Spatial Superintelligence Inc. "

@@ -58,9 +58,16 @@ function maintenanceModel(M) {
   const g = new THREE.Group();
   g.add(mesh(new THREE.SphereGeometry(0.9, 32, 24), M.white));
   g.add(mesh(new THREE.TorusGeometry(0.972, 0.09, 10, 48).rotateX(Math.PI / 2), M.goldSoft));
+  // Rounded, elliptical tapers stay ear-shaped as the orb turns. The buried
+  // curved roots and small rounded tips avoid flat tabs or tall pointed horns.
+  const earGeometry = new THREE.LatheGeometry([
+    [0, -0.60], [0.08, -0.50], [0.18, -0.37], [0.25, -0.24], [0.27, -0.145],
+    [0.265, -0.105], [0.235, -0.05], [0.19, 0.025], [0.14, 0.10],
+    [0.085, 0.166], [0.045, 0.207], [0.022, 0.225], [0, 0.232],
+  ].map(([radius, y]) => new THREE.Vector2(radius, y)), 28).scale(1, 1, 0.65);
   for (const side of [-1, 1]) {
-    const ear = mesh(new THREE.ConeGeometry(0.234, 0.765, 12), M.white, side * 0.63, 0.945, 0.18);
-    ear.rotation.z = -side * 0.5; g.add(ear);
+    const ear = mesh(earGeometry, M.white, side * 0.55, 0.895, 0.13);
+    ear.rotation.z = -side * 0.15; g.add(ear);
   }
   return fuse(g);
 }
