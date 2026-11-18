@@ -462,15 +462,30 @@ html[data-world-mood="night"] .world-mood .mood-sun { display: block; }
   html[data-world-mood="night"] .world, .world[data-mood="night"] { --w-poster: url(../img/world-night-mobile.webp); }
   html[data-world-pose="intro"] .world { --w-poster: url(../img/world-day-mobile-intro.webp); }
   html[data-world-pose="intro"][data-world-mood="night"] .world { --w-poster: url(../img/world-night-mobile-intro.webp); }
+  /* The settled scene hangs from the navigation, so its preview is pinned to the top edge too. */
+  html[data-world-pose="rest"] .world { background-position: center top, center; }
   .world-bar { top: 0.75rem; gap: 1rem; }
   .world-bar .home { font-size: 0.9rem; }
   .world-bar nav { gap: 1rem; }
   .world-mood { margin-left: -0.45rem; }
   .world-bar nav a { font-size: 0.8rem; }
   .world-scroll { bottom: 1.25rem; font-size: 0.6875rem; }
-  .world-copy .lede { font-size: 1.02rem; }
-  .world-scrim::before { background: linear-gradient(0deg, rgba(246, 244, 239, 0.48) 0%, rgba(246, 244, 239, 0.22) 31%, rgba(246, 244, 239, 0) 53%), linear-gradient(180deg, rgba(246, 244, 239, 0.18) 0%, rgba(246, 244, 239, 0) 13%); }
-  .world-scrim::after { background: linear-gradient(0deg, rgba(5, 8, 20, 0.48) 0%, rgba(5, 8, 20, 0.22) 31%, rgba(5, 8, 20, 0) 53%), linear-gradient(180deg, rgba(5, 8, 20, 0.18) 0%, rgba(5, 8, 20, 0) 13%); }
+  /* The scene keeps the arm, globe and cat above this text (see fitTall in source/world/main.js);
+     the veil below is measured from the bottom edge so it ends just above the eyebrow. */
+  .world-copy { bottom: 6.25rem; }
+  .world-copy h1 { font-size: clamp(2.6rem, 14.5vw, 3.5rem); }
+  .world-copy .eyebrow { margin-bottom: 0.6rem; }
+  .world-copy .lede { margin: 0.75rem 0 1.2rem; font-size: 1.02rem; }
+  .world-scrim::before { background: linear-gradient(0deg, rgba(246, 244, 239, 0.74) 0, rgba(246, 244, 239, 0.66) 8rem, rgba(246, 244, 239, 0.52) 15rem, rgba(246, 244, 239, 0.3) 19.5rem, rgba(246, 244, 239, 0) 22.5rem), linear-gradient(180deg, rgba(246, 244, 239, var(--w-top, 0.18)) 0, rgba(246, 244, 239, 0) var(--w-top-end, 13%)); }
+  .world-scrim::after { background: linear-gradient(0deg, rgba(5, 8, 20, 0.72) 0, rgba(5, 8, 20, 0.64) 8rem, rgba(5, 8, 20, 0.5) 15rem, rgba(5, 8, 20, 0.28) 19.5rem, rgba(5, 8, 20, 0) 22.5rem), linear-gradient(180deg, rgba(5, 8, 20, var(--w-top, 0.18)) 0, rgba(5, 8, 20, 0) var(--w-top-end, 13%)); }
+}
+/* A short phone screen (an iPhone SE, or any phone with its toolbars showing): tighter text leaves the scene more room. */
+@media (max-width: 40rem) and (max-height: 39rem) {
+  .world-copy { bottom: 5.75rem; }
+  .world-copy h1 { font-size: clamp(2.6rem, 12.5vw, 2.9rem); }
+  .world-copy .eyebrow { margin-bottom: 0.45rem; }
+  .world-copy .lede { margin: 0.55rem 0 1rem; font-size: 0.95rem; }
+  .world-scrim { --w-top: 0.42; --w-top-end: 17%; }       /* the scene reaches up behind the navigation here */
 }
 @media (prefers-reduced-motion: reduce) {
   .world, .world canvas, .world-copy .lede, .world-copy .actions, .world-scrim::before, .world-scrim::after, .world-scroll .scroll-arrow, .world-bar, .world-mood { transition: none; }

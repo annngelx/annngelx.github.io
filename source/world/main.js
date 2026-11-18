@@ -25,9 +25,10 @@ const TIERS = {
 
 /**
  * Start the landing scene on `canvas`.
- * opts: { reducedMotion, startTime, intro (seconds, 0 = none), quality, manual, time ('day' | 'night'; default: the visitor's clock) }
+ * opts: { reducedMotion, startTime, intro (seconds, 0 = none), quality, manual, time ('day' | 'night'; default: the visitor's clock),
+ *         band (function returning [top, bottom]: the part of the canvas height left clear between the page's navigation and its text) }
  * Fires on the canvas: world:loaded (detail: 'day' | 'night'), world:state ('intro' | 'ready'), world:fail.
- * Returns { skip(), setPaused(value), setMood(name), dispose(), paused } or null when WebGL 2 is unavailable.
+ * Returns { skip(), setPaused(value), setMood(name), reframe(), dispose(), paused } or null when WebGL 2 is unavailable.
  */
 export function startWorld(canvas, opts = {}) {
   let renderer;
@@ -35,7 +36,7 @@ export function startWorld(canvas, opts = {}) {
   if (!renderer.capabilities.isWebGL2) { renderer.dispose(); return null; }
   const life = { disposed: false, raf: 0, timer: 0, cleanups: [] };
   const emit = (name, detail) => { if (!life.disposed) canvas.dispatchEvent(new CustomEvent(name, { detail, bubbles: true })); };
-  const api = { skip() { if (!life.disposed) opts.intro = 0; }, setPaused() {}, setMood(name) { if (!life.disposed && (name === 'day' || name === 'night')) opts.time = name; }, paused: false, state: 'loading', dispose() {
+  const api = { skip() { if (!life.disposed) opts.intro = 0; }, setPaused() {}, reframe() {}, setMood(name) { if (!life.disposed && (name === 'day' || name === 'night')) opts.time = name; }, paused: false, state: 'loading', dispose() {
     if (life.disposed) return;
     life.disposed = true; api.state = 'disposed'; api.paused = true;
     cancelAnimationFrame(life.raf); clearTimeout(life.timer);
@@ -155,8 +156,33 @@ function build(canvas, renderer, opts, emit, api, life) {
   const v = (x, y, z) => new THREE.Vector3(x, y, z);
   const wide = { pos: v(L.CAM.x, L.CAM.y, L.CAM.z), tgt: v(0.1, 2.75, 0), fov: 42 };
   const tall = { pos: v(1.25, 1.7, 17.0), tgt: v(1.0, 3.5, 0), fov: 64 };
-  const rest = { pos: v(), tgt: v(), fov: 42 };
-  const frame = (aspect) => { const k = smooth(1.2, 0.72, aspect); rest.pos.lerpVectors(wide.pos, tall.pos, k); rest.tgt.lerpVectors(wide.tgt, tall.tgt, k); rest.fov = lerp(aspect > 2.2 ? 36 : wide.fov, tall.fov, k); };
+  const rest = { pos: v(), tgt: v(), fov: 42, introFov: 50 };
+  // On a portrait screen the page's name and lede sit over the lower part of the frame. opts.band() reports the
+  // clear band between the navigation and that text, as fractions of the canvas height. Aim and zoom the portrait
+  // view so the hanging sphere's top and the waterline of the cat's stone land on the band's two edges: the arm,
+  // globe and cat stay above the text, and the text sits over open water.
+  const elevation = (x, y, z) => Math.atan2(y - tall.pos.y, Math.hypot(x - tall.pos.x, z - tall.pos.z));
+  const HIGH = elevation(L.CROWN.x, L.CROWN.y + L.CROWN.r + 0.7, L.CROWN.z), LOW = elevation(L.CAT.x, 0, L.CAT.z + 1.3);
+  const tanDeg = (deg) => Math.tan(deg * Math.PI / 180), TAN_MIN = tanDeg(27), TAN_COMFORT = tanDeg(35), TAN_MAX = tanDeg(38);   // field of view 54, 70 and 76 degrees
+  const fitTall = () => {
+    const given = typeof opts.band === 'function' ? opts.band() : null;
+    const ok = Array.isArray(given) && Number.isFinite(given[0]) && Number.isFinite(given[1]);
+    const top = ok ? clamp(given[0], 0.02, 0.2) : 0.06, bottom = ok ? clamp(given[1], 0.42, 0.8) : 0.56;
+    const b = 1 - 2 * bottom, d = Math.tan(HIGH - LOW);
+    // half-height of the view (tan of half the field of view) that puts the sphere's top at `high` and the stone's waterline at `bottom`
+    const solve = (high) => { const a = 1 - 2 * high; return Math.abs(a * b) < 1e-4 ? d / (a - b) : ((a - b) - Math.sqrt(Math.max(0, (a - b) ** 2 - 4 * a * b * d * d))) / (2 * a * b * d); };
+    // Level the sphere's top with the navigation where that needs no more than a 70 degree view. On a shorter
+    // screen let it rise to the top edge first, and only then widen the view further.
+    const half = clamp(Math.max(solve(0.02), Math.min(solve(top), TAN_COMFORT)), TAN_MIN, TAN_MAX);
+    const pitch = LOW - Math.atan(b * half);                 // whatever the zoom, the text stays clear of the stone
+    tall.fov = 2 * Math.atan(half) * 180 / Math.PI;
+    tall.tgt.y = tall.pos.y + Math.tan(pitch) * Math.hypot(tall.tgt.x - tall.pos.x, tall.tgt.z - tall.pos.z);
+  };
+  const frame = (aspect) => {
+    const k = smooth(1.2, 0.72, aspect), wideFov = aspect > 2.2 ? 36 : wide.fov; if (k > 0) fitTall();
+    rest.pos.lerpVectors(wide.pos, tall.pos, k); rest.tgt.lerpVectors(wide.tgt, tall.tgt, k); rest.fov = lerp(wideFov, tall.fov, k);
+    rest.introFov = lerp(wideFov, 64, k) + 8;                // the opening view under the dome does not depend on the text, so its loading previews stay valid
+  };
   const INTRO = frozen ? 0 : (opts.intro ?? 7.5);
   const from = { pos: v(0.4, 16.2, 8.5), tgt: v(-1.5, 17.5, -14) };          // the visit starts under the dome and comes down to the water
   const mouse = { x: 0, y: 0 }, mx = new Spring(0, 9, 1), my = new Spring(0, 9, 1), scr = new Spring(0, 14, 1);
@@ -167,7 +193,7 @@ function build(canvas, renderer, opts, emit, api, life) {
     const k = INTRO > 0 ? clamp(introT / INTRO) : 1, e = easeIO(k), et = easeIO(clamp(k * 1.1));
     pos.lerpVectors(from.pos, rest.pos, e); tgt.lerpVectors(from.tgt, rest.tgt, et);
     pos.x += Math.sin(e * Math.PI) * 1.6;                                     // a slight arc on the way down
-    camera.fov = rest.fov + (1 - e) * 8;
+    camera.fov = lerp(rest.introFov, rest.fov, e);
     const px = mx.step(mouse.x, dt), py = my.step(mouse.y, dt), s = scr.step(clamp((window.scrollY || 0) / Math.max(1, innerHeight)), dt);
     rgt.subVectors(tgt, pos).cross(upv).normalize();
     pos.addScaledVector(rgt, px * 0.5).y += -py * 0.16 + s * 1.3 + Math.sin(t * 0.23) * 0.02;
@@ -217,6 +243,8 @@ function build(canvas, renderer, opts, emit, api, life) {
   }
 
   api.skip = () => { introT = Math.max(introT, INTRO); setState('ready'); };
+  // The page calls this when its text moves without the canvas changing size (fonts arriving, for one).
+  api.reframe = () => { if (life.disposed || !cw) return; frame(camera.aspect); if (frozen || api.paused || manual) { placeCamera(t, 0); draw(); } };
   api.setMood = (name) => {
     if (life.disposed || (name !== 'day' && name !== 'night')) return;
     api.mood = M.name = name;

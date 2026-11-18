@@ -63,7 +63,11 @@ export function architecturalStone(W, { roughness = 0.36, scale = 0.22, flute = 
         vec3 stoneBump(vec3 p,vec3 n,vec2 gradient,float face){
           vec3 dx=dFdx(p),dy=dFdy(p),a=cross(dy,n),b=cross(n,dx);
           float det=dot(dx,a)*face;
-          return normalize(abs(det)*n-sign(det)*(gradient.x*a+gradient.y*b));
+          // A triangle seen edge-on or smaller than a pixel has no usable derivatives; normalizing the zero
+          // vector there gives an invalid pixel, which the bloom pass then spreads over the whole frame.
+          vec3 bumped=abs(det)*n-sign(det)*(gradient.x*a+gradient.y*b);
+          float len=length(bumped);
+          return len>1e-12?bumped/len:n;
         }`)
       .replace('#include <color_fragment>', /* glsl */`#include <color_fragment>
         vec3 stoneP=vStonePosition*uStoneScale;
@@ -91,6 +95,6 @@ export function architecturalStone(W, { roughness = 0.36, scale = 0.22, flute = 
           +(mineral.g-0.5)*0.13+(mineral.r-0.5)*0.035*mineralDetail,0.28,0.78);`)
       .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\nnormal=stoneBump(-vViewPosition,normal,vec2(dFdx(stoneRelief),dFdy(stoneRelief)),faceDirection);');
   };
-  material.customProgramCacheKey = () => `architectural-stone-mineral-v2-${flute ? 'fluted' : 'plain'}`;
+  material.customProgramCacheKey = () => `architectural-stone-mineral-v3-${flute ? 'fluted' : 'plain'}`;
   return material;
 }
