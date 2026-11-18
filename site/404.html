@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found | Angel Xu</title>
+<meta name="robots" content="noindex">
+<style>
+html { height: 100%; }
+body { margin: 0; min-height: 100%; display: grid; place-content: center; gap: 1.25rem; padding: 2rem; background: #f6f4ef; color: #1c1b20; font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif; }
+h1 { margin: 0; font-size: clamp(5rem, 22vw, 14rem); line-height: 0.85; font-weight: 900; letter-spacing: -0.03em; }
+p { margin: 0; max-width: 28rem; font-size: 1.2rem; line-height: 1.5; }
+a { color: #8a651a; }
+</style>
+</head>
+<body>
+<h1>404</h1>
+<p>This page doesn't exist. Go back to the <a id="home" href="/">home page</a>.</p>
+<script>
+// A GitHub Pages project site lives under /<repository>/, so check for that before pointing at "/".
+(function () {
+  var first = location.pathname.split("/")[1];
+  if (!first) return;
+  fetch("/" + first + "/favicon.svg", { method: "HEAD" }).then(function (r) { if (r.ok) document.getElementById("home").href = "/" + first + "/"; }).catch(function () {});
+})();
+</script>
+</body>
+</html>

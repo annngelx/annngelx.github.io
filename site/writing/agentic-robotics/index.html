@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How robots become agentic: four approaches | Angel Xu</title>
+<meta name="description" content="Layered orchestration, code as policy, constraint-mediated generation and direct control: what each does, the evidence so far, and where the lines blur.">
+<meta property="og:title" content="How robots become agentic: four approaches | Angel Xu">
+<meta property="og:description" content="Layered orchestration, code as policy, constraint-mediated generation and direct control: what each does, the evidence so far, and where the lines blur.">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="en_US">
+<link rel="canonical" href="https://annngelx.github.io/writing/agentic-robotics/">
+<meta property="og:url" content="https://annngelx.github.io/writing/agentic-robotics/">
+<link rel="alternate" hreflang="en" href="https://annngelx.github.io/writing/agentic-robotics/">
+<link rel="alternate" hreflang="zh-Hans" href="https://annngelx.github.io/zh/writing/agentic-robotics/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+
+<link rel="preload" href="../../assets/fonts/archivo-latin-standard-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../assets/css/site.css">
+<script>document.documentElement.classList.add("js");try{if(localStorage.getItem("rail")==="closed")document.documentElement.classList.add("rail-closed")}catch(e){}</script>
+</head>
+<body class="has-rail">
+<a class="skip" href="#main">Skip to the essay</a>
+<aside class="rail" id="rail" aria-label="Article navigation">
+<a class="rail-brand" href="../../"><span class="rail-avatar"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="32" fill="#234b46"/>
+<path d="M13.5 31 16.5 10.5 30 20z M50.5 31 47.5 10.5 34 20z" fill="#fff4e8"/><path d="M18.6 24.5 19.9 15.6 26 20z M45.4 24.5 44.1 15.6 38 20z" fill="#ffa9bd"/>
+<ellipse cx="32" cy="35.5" rx="20.5" ry="16.5" fill="#fff4e8"/>
+<ellipse cx="24.4" cy="34.4" rx="2.7" ry="3.7" fill="#1b1930"/><ellipse cx="39.6" cy="34.4" rx="2.7" ry="3.7" fill="#1b1930"/><circle cx="23.5" cy="33" r=".95" fill="#fff"/><circle cx="38.7" cy="33" r=".95" fill="#fff"/>
+<path d="M30.5 38.6h3l-1.5 1.7z" fill="#ffa9bd"/><path d="M32 40.3q-1.6 2.4-3.7.9M32 40.3q1.6 2.4 3.7.9" fill="none" stroke="#1b1930" stroke-width=".9" stroke-linecap="round"/>
+<ellipse cx="18.3" cy="40" rx="3.1" ry="1.8" fill="#ffa9bd" opacity=".6"/><ellipse cx="45.7" cy="40" rx="3.1" ry="1.8" fill="#ffa9bd" opacity=".6"/>
+<path d="M11 50q21 9.5 42 0l2 9q-23 11-46 0z" fill="#e2bd5a"/></svg></span><span class="rail-name">Angel Xu</span></a>
+<p class="rail-title">How robots become agentic: four approaches</p>
+<p class="rail-lang" aria-label="Language"><span aria-current="true">English</span> / <a href="../../zh/writing/agentic-robotics/" lang="zh-Hans" hreflang="zh-Hans" data-lang-switch>中文</a></p>
+<div class="rail-head"><p class="rail-label" id="rail-contents">Contents</p><button class="rail-close" type="button" aria-label="Hide the sidebar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H5m6-6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+<nav class="rail-tree" aria-labelledby="rail-contents"><ol><li><a href="#how-the-2026-surveys-count">How the 2026 surveys count</a></li><li><a href="#1-layered-orchestration">1. Layered orchestration</a></li><li><a href="#2-code-as-policy">2. Code as policy</a></li><li><a href="#3-constraint-and-objective-mediated-generation">3. Constraint- and objective-mediated generation</a></li><li><a href="#4-frontier-models-in-direct-control">4. Frontier models in direct control</a></li><li><a href="#hybrids-choosing-the-path-step-by-step">Hybrids: choosing the path step by step</a></li><li class="has-kids"><a href="#beyond-run-time-agents-that-improve-robots">Beyond run time: agents that improve robots</a><button class="kids-toggle" type="button" aria-expanded="false" aria-label="Show the parts of Beyond run time: agents that improve robots"></button><ol><li><a href="#self-improvement">Self-improvement</a></li><li><a href="#data-and-world-generation">Data and world generation</a></li></ol></li><li><a href="#side-by-side">Side by side</a></li><li><a href="#where-the-lines-blur-and-what-is-still-open">Where the lines blur, and what is still open</a></li><li><a href="#demo-videos-and-project-pages">Demo videos and project pages</a></li><li><a href="#sources">Sources</a></li></ol></nav>
+<div class="rail-progress"><span class="rail-meter" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="fill"></span></span><span class="pct" data-progress>0%</span></div>
+<p class="rail-hint">Press <kbd>&uarr;</kbd> / <kbd>&darr;</kbd> to scroll</p>
+<p class="rail-label">Share</p>
+<ul class="rail-actions">
+<li><button type="button" data-copy data-done="Link copied" data-fail="Copy it from the address bar"><span aria-live="polite">Copy article link</span></button></li>
+<li><a href="#top">Back to title &uarr;</a></li>
+</ul>
+</aside>
+<button class="rail-open" type="button" aria-controls="rail" aria-expanded="false">Contents <span data-progress>0%</span></button>
+<div class="rail-scrim" hidden></div>
+<div class="on-field">
+<header class="bar">
+<a class="home" href="../../">Angel Xu</a>
+<nav aria-label="Site"><a href="../../#writing">Writing</a><a href="../../#about">About</a><a class="lang" href="../../zh/writing/agentic-robotics/" lang="zh-Hans" hreflang="zh-Hans" data-lang-switch>中文</a></nav>
+</header>
+<div class="masthead"><div class="inner">
+<h1 id="top" tabindex="-1">How robots become agentic: four approaches</h1>
+<p class="dek">Layered orchestration, code as policy, constraint-mediated generation and direct control: what each does, the evidence so far, and where the lines blur.</p>
+<p class="meta"><span>Angel Xu</span><span><time datetime="2026-11-17">17 November 2026</time></span><span>16-minute read</span></p>
+</div></div>
+</div>
+<main id="main" class="prose" tabindex="-1">
+<p>There are four main approaches to making a robot agentic today. No survey gives this exact count, because each sorts the field by a different question. Counting the alternative ways a robot's decisions reach its motors at run time gives four.</p>
+<p>What separates them is what the frontier reasoning model outputs. Hybrids that switch between approaches step by step are combinations, not a fifth approach.</p>
+<ol>
+<li><strong>Layered orchestration.</strong> The model picks and steers learned skills (VLAs, world action models, RL policies) as tools.</li>
+<li><strong>Code as policy.</strong> The model writes a program over perception and control primitives.</li>
+<li><strong>Constraint- and objective-mediated generation.</strong> The model writes value maps, keypoint constraints or costs; an optimizer turns them into motion.</li>
+<li><strong>Direct control.</strong> The model emits the motion targets itself.</li>
+</ol>
+<p>End-to-end VLAs and world action models are not counted as approaches, even ones that reason internally. The surveys disagree on them. Salimpour et al. count end-to-end models as one integration type. Wang et al. include a standalone policy only when a foundation-model planner or verifier steers it. Qin et al. state that action prediction alone does not make a system agentic. Here they appear as the motor layer that the run-time paths drive.</p>
+<figure class="diagram"><div class="scroll" tabindex="0" role="group" aria-label="Four run-time approaches differ in what sits between the reasoning model and the robot; self-improvement and data and world generation sit on top of any of them"><svg viewBox="0 0 760 504" aria-hidden="true" font-family="Archivo, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', Helvetica, Arial, sans-serif"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8a8fa3"/></marker></defs><rect x="16" y="48" width="728" height="328" rx="8" fill="none" stroke="var(--rule)" stroke-width="1.25"/><text x="32" y="74" font-size="13" font-weight="700" fill="var(--muted)" text-anchor="start">At run time: how decisions reach the motors</text><text x="32" y="102" font-size="14" font-weight="750" fill="var(--ink)" text-anchor="start">1. Layered</text><rect x="32" y="112" width="160" height="48" rx="6" fill="var(--tint)" stroke="var(--field)" stroke-width="2"/><text x="112" y="140" font-size="13" font-weight="500" fill="var(--ink)" text-anchor="middle">Reasoning model</text><path d="M64 160V206" fill="none" stroke="#8a8fa3" stroke-width="1.25" marker-end="url(#ah)"/><text x="76" y="188" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="start">subgoals, marks</text><rect x="32" y="208" width="160" height="56" rx="6" fill="#fff" stroke="#8a8fa3" stroke-width="1.25"/><text x="112" y="232" font-size="13" font-weight="600" fill="var(--ink)" text-anchor="middle">Learned skills</text><text x="112" y="250" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="middle">VLAs, WAMs, RL</text><path d="M64 264V310" fill="none" stroke="#8a8fa3" stroke-width="1.25" marker-end="url(#ah)"/><text x="76" y="292" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="start">motor commands</text><rect x="32" y="312" width="160" height="48" rx="6" fill="#fff" stroke="#8a8fa3" stroke-width="1.25"/><text x="112" y="340" font-size="13" font-weight="500" fill="var(--ink)" text-anchor="middle">Robot</text><text x="208" y="102" font-size="14" font-weight="750" fill="var(--ink)" text-anchor="start">2. Code as policy</text><rect x="208" y="112" width="160" height="48" rx="6" fill="var(--tint)" stroke="var(--field)" stroke-width="2"/><text x="288" y="140" font-size="13" font-weight="500" fill="var(--ink)" text-anchor="middle">Reasoning model</text><path d="M240 160V206" fill="none" stroke="#8a8fa3" stroke-width="1.25" marker-end="url(#ah)"/><text x="252" y="188" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="start">a program</text><rect x="208" y="208" width="160" height="56" rx="6" fill="#fff" stroke="#8a8fa3" stroke-width="1.25"/><text x="288" y="232" font-size="13" font-weight="600" fill="var(--ink)" text-anchor="middle">Program</text><text x="288" y="250" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="middle">+ controllers</text><path d="M240 264V310" fill="none" stroke="#8a8fa3" stroke-width="1.25" marker-end="url(#ah)"/><text x="252" y="292" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="start">motor commands</text><rect x="208" y="312" width="160" height="48" rx="6" fill="#fff" stroke="#8a8fa3" stroke-width="1.25"/><text x="288" y="340" font-size="13" font-weight="500" fill="var(--ink)" text-anchor="middle">Robot</text><text x="384" y="102" font-size="14" font-weight="750" fill="var(--ink)" text-anchor="start">3. Constraints</text><rect x="384" y="112" width="160" height="48" rx="6" fill="var(--tint)" stroke="var(--field)" stroke-width="2"/><text x="464" y="140" font-size="13" font-weight="500" fill="var(--ink)" text-anchor="middle">Reasoning model</text><path d="M416 160V206" fill="none" stroke="#8a8fa3" stroke-width="1.25" marker-end="url(#ah)"/><text x="428" y="182" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="start">constraints,</text><text x="428" y="197" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="start">value maps, costs</text><rect x="384" y="208" width="160" height="56" rx="6" fill="#fff" stroke="#8a8fa3" stroke-width="1.25"/><text x="464" y="232" font-size="13" font-weight="600" fill="var(--ink)" text-anchor="middle">Optimizer</text><text x="464" y="250" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="middle">solves for motion</text><path d="M416 264V310" fill="none" stroke="#8a8fa3" stroke-width="1.25" marker-end="url(#ah)"/><text x="428" y="292" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="start">motor commands</text><rect x="384" y="312" width="160" height="48" rx="6" fill="#fff" stroke="#8a8fa3" stroke-width="1.25"/><text x="464" y="340" font-size="13" font-weight="500" fill="var(--ink)" text-anchor="middle">Robot</text><text x="560" y="102" font-size="14" font-weight="750" fill="var(--ink)" text-anchor="start">4. Direct control</text><rect x="560" y="112" width="160" height="48" rx="6" fill="var(--tint)" stroke="var(--field)" stroke-width="2"/><text x="640" y="140" font-size="13" font-weight="500" fill="var(--ink)" text-anchor="middle">Reasoning model</text><path d="M592 160V310" fill="none" stroke="#8a8fa3" stroke-width="1.25" marker-end="url(#ah)"/><text x="604" y="232" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="start">motion chunks,</text><text x="604" y="248" font-size="11.5" font-weight="400" fill="var(--muted)" text-anchor="start">one per tool call</text><rect x="560" y="312" width="160" height="48" rx="6" fill="#fff" stroke="#8a8fa3" stroke-width="1.25"/><text x="640" y="340" font-size="13" font-weight="500" fill="var(--ink)" text-anchor="middle">Robot</text><rect x="16" y="392" width="728" height="96" rx="8" fill="#f7f0db" stroke="#c79f43" stroke-width="1.25"/><text x="32" y="418" font-size="13" font-weight="700" fill="var(--ink)" text-anchor="start">Beyond run time: agents that improve robots, on top of any approach</text><text x="32" y="446" font-size="13" font-weight="400" fill="var(--ink)" text-anchor="start">Self-improvement: lasting changes to policies, rewards, code and skills</text><text x="32" y="470" font-size="13" font-weight="400" fill="var(--ink)" text-anchor="start">Data and world generation: tasks, labels, scenes, digital twins, benchmarks</text></svg></div><figcaption>From left to right, less sits between the reasoning model and the motors, until in direct control nothing does. <span class="swipe">Swipe sideways to see all four.</span></figcaption></figure>
+<h2 id="how-the-2026-surveys-count">How the 2026 surveys count</h2>
+<p>Each survey answers a different question, which is why their counts differ.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Survey</th>
+<th>Date</th>
+<th>What it sorts by</th>
+<th>Its count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Survey"><a href="https://arxiv.org/abs/2611.18359" rel="noopener">Envisioning Agentic Robotics</a> (Grid Robotics: Lan et al.)</td>
+<td data-label="Date">Nov 2026</td>
+<td data-label="What it sorts by">How the reasoning layer reaches the body</td>
+<td data-label="Its count">3 execution paths: layered orchestration, direct control, code as policy; hybrids recommended</td>
+</tr>
+<tr>
+<td data-label="Survey"><a href="https://www.preprints.org/manuscript/202610.2747" rel="noopener">A Survey of Agentic Robotics: Toward Continual Self-Improvement</a> (Wang, Jiang, Shen, Soh)</td>
+<td data-label="Date">Oct 2026</td>
+<td data-label="What it sorts by">Where the foundation model's decisions act, coded across 2,343 systems</td>
+<td data-label="Its count">3 loci: task orchestration, motion/action generation, improvement</td>
+</tr>
+<tr>
+<td data-label="Survey"><a href="https://arxiv.org/pdf/2610.20442" rel="noopener">Towards Agentic Robots</a> (Qin et al.; CUHK, Fudan, Tsinghua and others)</td>
+<td data-label="Date">Oct 2026</td>
+<td data-label="What it sorts by">Which part of the robot system model decisions shape</td>
+<td data-label="Its count">17 categories in 4 domains: model, data, environment, harness</td>
+</tr>
+<tr>
+<td data-label="Survey"><a href="https://www.alphaxiv.org/abs/2608.01851" rel="noopener">Weights or Skills?</a> (Jena et al.)</td>
+<td data-label="Date">Aug 2026</td>
+<td data-label="What it sorts by">Whether competence ships as network weights or as code</td>
+<td data-label="Its count">6 technique branches; code as policy split into 5 levels of self-improvement</td>
+</tr>
+<tr>
+<td data-label="Survey"><a href="https://arxiv.org/pdf/2508.05294v4" rel="noopener">Towards Embodied Agentic AI</a> (Salimpour et al.)</td>
+<td data-label="Date">Nov 2025</td>
+<td data-label="What it sorts by">How the foundation model is integrated</td>
+<td data-label="Its count">4 types: single-shot tool calls, agentic loop, orchestration, direct or embedded</td>
+</tr>
+</tbody>
+</table></div>
+<figure class="shot">
+<img src="../../assets/img/envisioning-abstract.webp" alt="arXiv abstract page of Envisioning Agentic Robotics by Grid Robotics, submitted 13 November 2026" width="1180" height="360" loading="lazy">
+<figcaption><em>Envisioning Agentic Robotics</em> (Grid Robotics: Qingfeng Lan et al., submitted 13 November 2026) opens by crediting GPT-6 Astra with starting the shift to agentic robotics. Screenshot of the <a href="https://arxiv.org/abs/2611.18359" rel="noopener">arXiv abstract page</a>, CC BY.</figcaption>
+</figure>
+
+<figure>
+<img src="../../assets/img/envisioning-fig4-execution-paths.webp" alt="Figure 4 of Envisioning Agentic Robotics: layered orchestration, direct control and code as policy as three paths from S2 to the physical world" width="1260" height="514" loading="lazy">
+<figcaption>Figure 4 of <em>Envisioning Agentic Robotics</em>, "Three typical execution paths": approaches 1, 4 and 2 in this essay. The authors note one system may use all three within a single task. From the <a href="https://arxiv.org/html/2611.18359" rel="noopener">arXiv HTML version</a>, CC BY.</figcaption>
+</figure>
+
+<p>The four approaches here combine two sources. Three are the execution paths named in <em>Envisioning Agentic Robotics</em>. The fourth comes from Wang et al., who split motion generation three ways: direct action, programs, and objectives that a solver executes. Wang et al.'s improvement locus and Qin et al.'s Data and Environment domains are real and growing. But they describe how robots are built and improved, not how a robot acts, so they are covered under <a href="#beyond-run-time-agents-that-improve-robots">Beyond run time</a>. Harness functions (memory, monitoring and recovery, skill libraries) appear in every approach, so they are not an approach of their own.</p>
+<h2 class="approach" id="1-layered-orchestration">1. Layered orchestration</h2>
+<p>This is how the frontier labs ship today. A reasoning model plans, tracks progress and decides when to replan. Fast learned policies do the physical work as bounded subtasks.</p>
+<p class="label">In production stacks</p>
+<ul>
+<li><a href="https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence/" rel="noopener">Gemini Robotics 2.5</a> (DeepMind, Nov 10 2026). The Gemini Robotics ER model tracks the workflow; the 2.5 VLA does the reaching, grasping and placing. Kitting automotive parts on Apptronik's Apollo 2 at Mercedes-Benz reached 96% success.</li>
+<li><a href="https://research.nvidia.com/labs/gear/gr00t-2" rel="noopener">GR00T 2</a> (NVIDIA, Nov 2026). A reasoning model marks grasp and release points on the camera view.<ul>
+<li>On the YAM arm, instruction following rose from 40% to 92%.</li>
+<li>Long-horizon trash sorting went from 0 to 17 of 20 runs.</li>
+<li>Three toy assemblies scored 98, 97 and 97 out of 100.</li>
+</ul>
+</li>
+<li><a href="https://arxiv.org/abs/2604.15483" rel="noopener">π0.7</a> (Physical Intelligence, Apr 2026). The motor model itself is built to be steered from above: it accepts language coaching, strategy metadata and subgoal images generated at run time by a small world model.</li>
+</ul>
+<figure>
+<img src="../../assets/img/gr00t2-agentic-hanoi.webp" alt="Two robot arms above a Tower of Hanoi puzzle in NVIDIA's agentic GR00T 2 demo" width="1456" height="819" loading="lazy">
+<figcaption>A still from NVIDIA's agentic GR00T 2 demos: a frontier reasoning agent plans the Tower of Hanoi moves and calls GR00T 2 as a tool for each grasp. In NVIDIA's words, the agent decides what to do and GR00T 2 decides how. From the <a href="https://research.nvidia.com/labs/gear/gr00t-2" rel="noopener">GR00T 2 project page</a>, which has the videos.</figcaption>
+</figure>
+
+<p class="label">In research harnesses</p>
+<ul>
+<li><a href="https://arxiv.org/abs/2605.13119" rel="noopener">VLAs-as-Tools</a>: a VLM agent calls specialized VLA tools for bounded subtasks and replans when they report progress events. On three real Franka tasks, success rose from 16.7% to 58.3% under matched data and compute.</li>
+<li><a href="https://arxiv.org/abs/2607.18060" rel="noopener">RoboHarness</a>: wraps VLAs, RL policies and task-and-motion planners as skills. It learns where each policy works from execution memory, and steers the robot into the next policy's familiar states before handing over.</li>
+<li><a href="https://arxiv.org/abs/2606.07723" rel="noopener">VoLo</a> (NVIDIA): the VLM can interrupt and redirect a VLA or world action model mid-run, because the physical world keeps moving while the model reasons.</li>
+<li><a href="https://arxiv.org/abs/2608.29896" rel="noopener">EMERGE-Policy</a>: splits the agent into sub-agents for perception, monitoring, verification and memory, with branch-based recovery.</li>
+</ul>
+<p><strong>What decides whether it works.</strong> A <a href="https://arxiv.org/abs/2606.10267" rel="noopener">systematic study of hierarchical VLA agents</a> (Hu, Shridhar, Shah, Tan, Xie) found that model choice and interface design jointly shape performance. A carefully designed hierarchy beat both a flat VLA and a naive hierarchy. Three design questions recur:</p>
+<ol>
+<li><strong>The interface.</strong> What the reasoner hands down is moving from text subgoals to pictures: subgoal images, grasp marks, traces.</li>
+<li><strong>Switching.</strong> When control passes between layers: on a timer, on an event, or by interruption.</li>
+<li><strong>Handoffs.</strong> Each motor policy only works in states its training data covered. Chaining policies fails at the seams unless the harness manages the transition.</li>
+</ol>
+<p><strong>Strengths and limits.</strong> Dexterity comes from specialized motor models; semantics and recovery come from the reasoner. But the system can only do what its motor tools can do, and nobody knows those tools' capability boundaries in advance.</p>
+<h2 class="approach" id="2-code-as-policy">2. Code as policy</h2>
+<p>Here the frontier model acts like a robotics engineer. It writes perception, planning and control code against the robot's interfaces, runs it, watches what happens and fixes it. The approach goes back to Google's Code as Policies (2022). What is new in 2026 is that coding agents can now get a robot working without a human writing the code.</p>
+<p class="label">Key evidence</p>
+<ul>
+<li><a href="https://arxiv.org/abs/2603.22435" rel="noopener">CaP-X</a> (Fu, Goldberg, Jim Fan and others, 2026) benchmarks 12 frontier models on robot manipulation through generated code.<ul>
+<li>Performance depends heavily on the abstractions a human designer provides, and drops as they are removed.</li>
+<li>Test-time compute closes much of the gap even with low-level primitives: multi-turn interaction, execution feedback, visual differencing, automatic skill synthesis.</li>
+<li>RL with verifiable rewards (CaP-RL) improves success and transfers from simulation to real robots with little loss.</li>
+</ul>
+</li>
+<li><a href="https://www.vals.ai/benchmarks/robo_bench" rel="noopener">Vals Robo-bench</a> (Oct 2026) runs each model in its vendor's coding agent (Codex, Claude Code). The agent gets only a robot's datasheet, kinematic model and sensor specs, and writes everything else itself.<ul>
+<li>Platforms: a Franka arm with 13 tasks, and a Unitree G1 humanoid with 11 tasks and no walking or balance controller.</li>
+<li>Top scores: GPT-6.1 Sol 28.3%, GPT-6 Astra 23.3%, Claude Opus 5.5 14.6%.</li>
+<li>No model reached 2 points on the humanoid tasks.</li>
+<li>Common failures: declaring a task done before it was, and thinking too long while the simulated physics kept running.</li>
+</ul>
+</li>
+<li><a href="https://ai-beat.github.io/news/2026/06/project-fetch-phase-two/" rel="noopener">Project Fetch, Phase Two</a> (Anthropic, Jun 2026). Claude Opus 4.7 worked a robot dog on its own: connecting to the lidar and cameras, writing control programs, detecting objects and navigating.<ul>
+<li>It finished four tasks in 9 minutes 35 seconds. The fastest human team, aided by an older Claude, took 181 minutes.</li>
+<li>It wrote 1,045 lines of code against that team's 10,309.</li>
+<li>It still could not fetch the ball: closed-loop control during the approach and grasp failed.</li>
+</ul>
+</li>
+</ul>
+<figure>
+<img src="../../assets/img/vals-robobench-tasks.webp" alt="Three public Vals Robo-bench tasks: arm balance scale, arm Lego manual, humanoid ninja course" width="1411" height="383" loading="lazy">
+<figcaption>The three public Vals Robo-bench tasks. A coding agent gets only the robot's datasheet and must write all the perception and control code itself. No model reached 2 points on humanoid tasks like the ninja course. From <a href="https://www.vals.ai/benchmarks/robo_bench" rel="noopener">Vals AI</a>.</figcaption>
+</figure>
+
+<p><strong>Strengths and limits.</strong> Code needs no robot training data, can be read and debugged, and builds a reusable skill library. It is strongest at integration: drivers, sensors, perception, planning. It is weakest where control must react to contact every fraction of a second. That is exactly the gap learned motor models fill.</p>
+<h2 class="approach" id="3-constraint-and-objective-mediated-generation">3. Constraint- and objective-mediated generation</h2>
+<p>Here the model specifies what a good motion must satisfy, and an optimizer works out the motion. The model writes 3D value maps, keypoint constraints or cost functions; a solver turns them into trajectories and re-solves as the scene changes. Wang et al. treat it as one of three ways a foundation model shapes motion, beside direct action and programs.</p>
+<p class="label">Key work</p>
+<ul>
+<li><a href="https://arxiv.org/abs/2409.01652" rel="noopener">ReKep</a> (Huang, Wang, Li, Zhang, Fei-Fei; 2024). The task becomes a sequence of relational keypoint constraints: Python functions that score 3D keypoint configurations. Vision-language models synthesize the constraints automatically, and a hierarchical optimizer solves them repeatedly as a closed-loop policy running in real time.</li>
+<li>VoxPoser and MOKA are earlier examples that Wang et al. place in the same class.</li>
+<li><a href="https://arxiv.org/abs/2603.05757" rel="noopener">EmboAlign</a> (Northwestern and Stanford, Mar 2026). It pairs this approach with a video generation model. A VLM writes constraints encoding spatial, kinematic and safety requirements; these are used to select among generated video rollouts, then to refine the robot trajectory and correct retargeting errors. It was tested on six real-robot tasks.</li>
+</ul>
+<figure>
+<img src="../../assets/img/rekep-method.webp" alt="ReKep pipeline: a vision model proposes keypoints, a VLM writes constraint functions, and a constrained optimization solver produces the actions for pouring tea" width="1411" height="631" loading="lazy">
+<figcaption>The ReKep pipeline for "Pour tea into the cup": a VLM writes keypoint constraints as Python functions, and a constrained optimization solver turns them into gripper motion. From the <a href="https://rekep-robot.github.io/" rel="noopener">ReKep project page</a>.</figcaption>
+</figure>
+
+<p><strong>Strengths and limits.</strong> The optimizer delivers geometric precision and constraint satisfaction that language and code alone struggle with, and the spec is easy to inspect. The weak point is the spec itself. The Goal-VLA authors note that VLM-generated value maps, constraints and rewards are often inaccurate, because current VLMs are weak at precise spatial reasoning.</p>
+<h2 class="approach" id="4-frontier-models-in-direct-control">4. Frontier models in direct control</h2>
+<p>Here the general-purpose reasoning model is the policy. It looks at the cameras, emits a short chunk of motion through a tool call, looks again and repeats. There is no learned motor model and no program in between. This is the newest approach and the most contested; it only became plausible with the spatial reasoning of the late-2026 frontier models.</p>
+<p><strong>How it is run.</strong> The open-source <a href="https://pypi.org/project/inspect-robots/" rel="noopener">Inspect Robots</a> framework puts a frontier model in the slot where a VLA would sit. The model drives the robot through tool calls, one approver-checked motion chunk per call. Every run is clamped to the robot's limits by default, with a cap on how far each step can move.</p>
+<p class="label">Results so far</p>
+<ul>
+<li><strong>Robocurve on real YAM arms</strong> (<a href="https://zeli.app/story/49582582" rel="noopener">Sept 2026</a>), 20 trials each:<ul>
+<li>Block into bowl: GPT-6 Astra 19, Claude Fable 5.1 8, Claude Fable 5 just 1.</li>
+<li>Astra averaged 2.5 minutes and $0.94 per run, against 6.8 minutes and $2.12 for Fable 5.1.</li>
+<li>Dexterous insertion: Astra and Fable 5.1 both succeeded only twice, stalling at the same final step.</li>
+</ul>
+</li>
+<li><strong>Robocurve, six tabletop tasks</strong> (<a href="https://runtimewire.com/article/robocurve-opus-55-robotics-benchmark" rel="noopener">Sept 23</a>): Claude Opus 5.5 matched Astra on average progress, about 36%, at roughly $0.90 per run. Astra fully completed five tasks; Opus 5.5 completed one.</li>
+<li><strong>RoboDojo Sim</strong> (<a href="https://www.humanoidsdaily.com/news/anthropic-claude-fable-5-2-robotics-robodojo" rel="noopener">Anthropic-run, Nov 9</a>): a simulated two-arm benchmark with 42 tasks, built to rank VLAs.<ul>
+<li>Scores: Claude Fable 5.2 64.9%, Opus 5.5 39.4%, Gemini 4 Argon 34.2%, GPT-6 Astra 29.8%, Fable 5.1 27.6%.</li>
+<li>Caveats: Anthropic ran every model itself and has not said whether the figure is a score or a success rate. Its post also doesn't say whether Fable 5.2 drove the arms directly or worked through code or skill models.</li>
+</ul>
+</li>
+</ul>
+<figure class="post">
+<img src="../../assets/img/robocurve-astra-fable-post.webp" alt="Post by Jay Chooi: GPT-6 Astra scored 95% on a robot control task, up from Fable 5.1's 40%, with a chart of completion rate against API cost" width="845" height="650" loading="lazy">
+<figcaption>Robocurve's founder Jay Chooi on the block-in-bowl result: GPT-6 Astra 95% against Claude Fable 5.1's 40%, at 2.3 times lower cost. <a href="https://x.com/chooi_jeq/status/2096064315115839904" rel="noopener">Post on X</a>, 5 September 2026.</figcaption>
+</figure>
+
+<p><strong>The case for it.</strong> In a <a href="https://dealroom.co/news/talk-Jv5B5CEaPJI-why-general-purpose-llms-may-win-at-robotics-waddle-labs-and-robocurve/" rel="noopener">YC interview</a>, Waddle Labs and Robocurve make the bitter-lesson argument: models trained on code, computer use and first-person video will beat models trained only on scarce robot data. They claim that frontier output speed is roughly doubling every month and could allow real-time control by the end of 2026. In the same interview, Waddle Labs said it compresses what the big model learns in context into reusable skills that smaller, faster models can run.</p>
+<p><strong>The case against it.</strong></p>
+<ul>
+<li><strong>Latency.</strong> Physics keeps moving while the model thinks.</li>
+<li><strong>Cost.</strong> About $1 to $2 per simple pick.</li>
+<li><strong>Precision.</strong> Contact-rich steps such as insertion still fail.</li>
+<li><strong>Safety.</strong> In Robocurve's <a href="https://www.neoteo.com/en/robocurves-roboharm-measured-three-robot-policies-in-staged-trials" rel="noopener">RoboHarm</a> test, models rarely refused harmful commands. Across five hazardous instructions, Astra attempted 97 of 100 trials. Fable 5.1 refused 20 times, all in the task that asked it to stab a baby doll.</li>
+</ul>
+<figure class="post">
+<img src="../../assets/img/robocurve-roboharm-post.webp" alt="Post by Jay Chooi on the RoboHarm benchmark: chart of harmful attempts against harmful successes for GPT-6 Astra, Fable 5.1 and MolmoAct2, with frames from the trials" width="845" height="714" loading="lazy">
+<figcaption>The RoboHarm results as Robocurve posted them: Astra attempted harmful actions in 97% of trials and succeeded in 62% of those attempts. Fable 5.1 refused the doll task outright. <a href="https://x.com/chooi_jeq/status/2101118049944543545" rel="noopener">Post on X</a>, September 2026.</figcaption>
+</figure>
+
+<h2 id="hybrids-choosing-the-path-step-by-step">Hybrids: choosing the path step by step</h2>
+<p>The four paths are not exclusive, and the strongest systems mix them. <a href="https://arxiv.org/html/2611.18359" rel="noopener"><em>Envisioning Agentic Robotics</em></a> argues that the interfaces don't form a scale from easy to hard. Each brings its own priors, control burden and failure modes. Its authors recommend testing three set-ups side by side: skills only, direct end-effector control, and a hybrid where the model chooses per step.</p>
+<p>The result they cite shows why: in one benchmark, GPT-6 Astra scored 92% with native control, fell to 61% when restricted to skills, and recovered to 85% when it could decide per skill whether to use one. Forcing a strong reasoner through a narrow interface cost more than it gained.</p>
+<h2 id="beyond-run-time-agents-that-improve-robots">Beyond run time: agents that improve robots</h2>
+<p>Two activities change what a robot runs on, not how it acts in the moment, and either can sit on top of any of the four approaches. ASPIRE is self-improvement on top of code as policy, and Learning While Deploying is self-improvement on top of a VLA stack. The line between the two activities is blurry: ENPIRE generates its own rollouts while improving policies, and RoboGen builds worlds and learns skills in the same loop.</p>
+<h3 id="self-improvement">Self-improvement</h3>
+<p>Here the model's decisions outlast the episode: it makes lasting changes to the robot's policies, rewards, code or skills. <a href="https://www.preprints.org/manuscript/202610.2747" rel="noopener">Wang et al.</a> split this into two kinds, and the second is where 2026's activity is.</p>
+<ul>
+<li><strong>Fixed-procedure improvement.</strong> The model supplies candidates inside a pipeline humans designed. Examples include Eureka (LLM-written reward functions), DrEureka, RoboCat and RoboGen. Fleet RL on VLAs belongs here too: <a href="https://arxiv.org/abs/2605.00416" rel="noopener">Learning While Deploying</a> (AgiBot) runs offline-to-online RL on autonomous rollouts and human interventions from a robot fleet.</li>
+<li><strong>Agent-directed improvement.</strong> The model also chooses the evidence, runs tests, changes the procedure or picks what to change. Of the 2,343 systems Wang et al. coded, only 17 do this, and 16 of them appeared in 2026.<ul>
+<li><a href="https://ut-austin-rpl.github.io/publications/2026/06/18/xiao-arxiv26-enpire/" rel="noopener">ENPIRE</a> (NVIDIA, CMU, Berkeley and others; Jun 2026). A harness lets coding agents run the physical loop themselves: reset the scene, run a policy, verify the outcome, refine. The agents read logs, consult the literature and rewrite training code. They trained policies to 99% success on dexterous tasks such as organizing a pin box and fastening a zip tie, faster when an agent team worked across a robot fleet.</li>
+<li><a href="https://arxiv.org/abs/2607.00272" rel="noopener">ASPIRE</a> (NVIDIA and others; Jun 2026). It writes and repairs code-as-policy programs from multimodal execution traces, stores validated fixes in a growing skill library, and searches over new tasks and programs. On unseen long-horizon LIBERO-Pro tasks it reached 31% success against 4% for prior methods.</li>
+</ul>
+</li>
+</ul>
+<figure class="post">
+<img src="../../assets/img/jimfan-enpire-post.webp" alt="Post by Jim Fan introducing ENPIRE: 8 Codex agents given a fleet of robots, GPUs and a token budget, with a video still of a robot hand at a pin box" width="845" height="749" loading="lazy">
+<figcaption>NVIDIA's Jim Fan introducing ENPIRE as "AutoResearch in the physical world": eight Codex agents with a robot fleet, GPUs and a token budget. <a href="https://x.com/DrJimFan/status/2066921736369766762" rel="noopener">Post on X</a>, June 2026.</figcaption>
+</figure>
+
+<p>This approach is still rare. Persistent improvement shows up in about one system in five each year, with no clear upward trend. What changed in 2026 is that frontier coding agents started directing the loop instead of feeding candidates into it.</p>
+<h3 id="data-and-world-generation">Data and world generation</h3>
+<p>Here the model doesn't control the robot or change its code. It decides what the robot learns from and is tested on. <a href="https://arxiv.org/pdf/2610.20442" rel="noopener">Qin et al.</a> give this two of their four domains. Data covers collection, annotation and refinement. Environment covers rebuilding scenes, generating tasks and building benchmarks.</p>
+<ul>
+<li><a href="https://arxiv.org/abs/2401.12963" rel="noopener">AutoRT</a> (Google DeepMind, 2024). A VLM describes each scene, an LLM proposes tasks, and a written "robot constitution" filters them for safety. It directed over 20 robots across several buildings and collected 77,000 real episodes.</li>
+<li><a href="https://arxiv.org/abs/2311.01455" rel="noopener">RoboGen</a> (2023–24). Runs a propose-generate-learn cycle: the agent proposes skills, builds simulation scenes for them, picks a learning method and generates the training supervision.</li>
+<li><a href="https://www.alphaxiv.org/abs/2604.09036" rel="noopener">V-CAGE</a> (2026). Synthesizes simulation data agentically, in place of scripted pipelines that break when tasks fail.</li>
+<li><a href="https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence/" rel="noopener">Gemini Robotics 2.5</a> (Nov 2026). Gemini 4 Argon turned real camera scenes into digital twins and thousands of varied practice runs. It also analyzed failure videos, proposed causes, and tested fixes in simulation and on robots.</li>
+</ul>
+<p>The catch is the gap to reality. <em>Envisioning Agentic Robotics</em> notes that synthetic data still carries a sim-to-real gap, so generated worlds supplement real deployment data rather than replace it.</p>
+<h2 id="side-by-side">Side by side</h2>
+<p>Dexterity trades against generality: the less a system relies on learned motor models, the less robot data it needs, and the worse it handles contact.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>What the model outputs</th>
+<th>Robot data needed</th>
+<th>Strongest at</th>
+<th>Weakest at</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Approach">1. Layered orchestration</td>
+<td data-label="What the model outputs">Subgoals, subgoal images, grasp marks</td>
+<td data-label="Robot data needed">Yes, for every motor model</td>
+<td data-label="Strongest at">Dexterous skills inside long tasks</td>
+<td data-label="Weakest at">Handoffs between policies; tasks outside the tools' range</td>
+<td data-label="Examples">Gemini Robotics 2.5, GR00T 2 with a reasoner, VLAs-as-Tools, RoboHarness</td>
+</tr>
+<tr>
+<td data-label="Approach">2. Code as policy</td>
+<td data-label="What the model outputs">A program over perception and control primitives</td>
+<td data-label="Robot data needed">No</td>
+<td data-label="Strongest at">Integration, perception, planning, reusable skills</td>
+<td data-label="Weakest at">Fast closed-loop contact</td>
+<td data-label="Examples">CaP-X, Vals Robo-bench agents, Project Fetch</td>
+</tr>
+<tr>
+<td data-label="Approach">3. Constraint- and objective-mediated</td>
+<td data-label="What the model outputs">Value maps, keypoint constraints, costs</td>
+<td data-label="Robot data needed">No</td>
+<td data-label="Strongest at">Geometric precision via an optimizer</td>
+<td data-label="Weakest at">Inaccurate specs from weak VLM spatial reasoning</td>
+<td data-label="Examples">ReKep, VoxPoser, EmboAlign</td>
+</tr>
+<tr>
+<td data-label="Approach">4. Direct control</td>
+<td data-label="What the model outputs">Motion chunks, one per tool call</td>
+<td data-label="Robot data needed">No</td>
+<td data-label="Strongest at">Novel tasks with no setup</td>
+<td data-label="Weakest at">Latency, cost per action, precision, safety</td>
+<td data-label="Examples">Robocurve trials, Fable 5.2 on RoboDojo</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="where-the-lines-blur-and-what-is-still-open">Where the lines blur, and what is still open</h2>
+<p>The approaches are starting to mix. A coding agent can call a VLA as one of its primitives. Waddle Labs distills what a frontier model learns in context into skills that smaller, faster models run. Anthropic hasn't said whether Fable 5.2's RoboDojo result came from direct control, code or skill models. Meanwhile, motor models are absorbing agent functions themselves: π0.7 takes coaching mid-task, and Physical Intelligence's <a href="https://arxiv.org/abs/2603.03596" rel="noopener">MEM</a> gives a VLA language-based memory for tasks up to about 15 minutes.</p>
+<p>Open questions:</p>
+<ol>
+<li><strong>Inside or outside?</strong> Will planning, memory and recovery stay in a harness around the motor model, or move into the model?</li>
+<li><strong>Speed and cost.</strong> Can frontier models get fast and cheap enough for direct control of contact-rich work, or will they always need a learned layer below?</li>
+<li><strong>The interface.</strong> Which language will reasoners and motor layers settle on: text, pictures (subgoal images, marks) or code?</li>
+<li><strong>Evaluation.</strong> Most numbers here come from the labs that built the systems. Neutral evaluations (Robocurve, Vals, the RoboDojo leaderboard) are still small, run few trials, and disagree on setup.</li>
+<li><strong>Safety at the action layer.</strong> DeepMind's <a href="https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence/" rel="noopener">ASIMOV-Jailbreak</a> benchmark reports 99.5% jailbreak resistance for Gemini 4 Argon, against 82% for Gemini Robotics ER 2. RoboHarm suggests that frontier models in direct control mostly comply with harmful commands.</li>
+</ol>
+<h2 id="demo-videos-and-project-pages">Demo videos and project pages</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Project</th>
+<th>Where to watch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Approach">1. Layered orchestration</td>
+<td data-label="Project">Gemini Robotics 2.5 (DeepMind)</td>
+<td data-label="Where to watch"><a href="https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence/" rel="noopener">Launch post</a></td>
+</tr>
+<tr>
+<td data-label="Approach">1. Layered orchestration</td>
+<td data-label="Project">GR00T 2 with a reasoning model (NVIDIA)</td>
+<td data-label="Where to watch"><a href="https://research.nvidia.com/labs/gear/gr00t-2" rel="noopener">Project page</a></td>
+</tr>
+<tr>
+<td data-label="Approach">1. Layered orchestration</td>
+<td data-label="Project">VoLo (NVIDIA)</td>
+<td data-label="Where to watch"><a href="https://chicychen.github.io/VoLo/" rel="noopener">Project page</a></td>
+</tr>
+<tr>
+<td data-label="Approach">1. Layered orchestration</td>
+<td data-label="Project">Hierarchical VLA agents study</td>
+<td data-label="Where to watch"><a href="https://jiahenghu.github.io/hi-vla" rel="noopener">Project page</a></td>
+</tr>
+<tr>
+<td data-label="Approach">1. Layered orchestration</td>
+<td data-label="Project">π0.7 (Physical Intelligence)</td>
+<td data-label="Where to watch"><a href="https://pi.website/pi07" rel="noopener">Project page</a></td>
+</tr>
+<tr>
+<td data-label="Approach">2. Code as policy</td>
+<td data-label="Project">Vals Robo-bench</td>
+<td data-label="Where to watch"><a href="https://www.vals.ai/benchmarks/robo_bench" rel="noopener">Leaderboard and run examples</a></td>
+</tr>
+<tr>
+<td data-label="Approach">3. Constraints</td>
+<td data-label="Project">ReKep</td>
+<td data-label="Where to watch"><a href="https://rekep-robot.github.io/" rel="noopener">Project page</a></td>
+</tr>
+<tr>
+<td data-label="Approach">4. Direct control</td>
+<td data-label="Project">Robocurve trials</td>
+<td data-label="Where to watch"><a href="https://x.com/chooi_jeq/status/2096064315115839904" rel="noopener">Jay Chooi's posts</a></td>
+</tr>
+<tr>
+<td data-label="Approach">Beyond run time</td>
+<td data-label="Project">ENPIRE (NVIDIA and others)</td>
+<td data-label="Where to watch"><a href="https://research.nvidia.com/labs/gear/enpire/" rel="noopener">Project page</a></td>
+</tr>
+<tr>
+<td data-label="Approach">Beyond run time</td>
+<td data-label="Project">ASPIRE (NVIDIA and others)</td>
+<td data-label="Where to watch"><a href="https://research.nvidia.com/labs/gear/aspire/" rel="noopener">Project page</a></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="sources">Sources</h2>
+<div class="sources">
+<p class="label">Surveys</p>
+<ul>
+<li><a href="https://arxiv.org/abs/2611.18359" rel="noopener">Envisioning Agentic Robotics: A New Era of Robotic Systems</a>, Grid Robotics</li>
+<li><a href="https://www.preprints.org/manuscript/202610.2747" rel="noopener">A Survey of Agentic Robotics: Toward Continual Self-Improvement</a>, Wang, Jiang, Shen, Soh</li>
+<li><a href="https://arxiv.org/pdf/2610.20442" rel="noopener">Towards Agentic Robots: Model, Data, Environment, and Harness</a>, Qin et al.</li>
+<li><a href="https://www.alphaxiv.org/abs/2608.01851" rel="noopener">Weights or Skills? A Survey of Robot-Learning Techniques</a>, Jena et al.</li>
+<li><a href="https://arxiv.org/pdf/2508.05294v4" rel="noopener">Towards Embodied Agentic AI</a>, Salimpour et al.</li>
+</ul>
+<p class="label">Systems and results</p>
+<ul>
+<li><a href="https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence/" rel="noopener">Gemini Robotics 2.5</a>, Google DeepMind</li>
+<li><a href="https://research.nvidia.com/labs/gear/gr00t-2" rel="noopener">GR00T 2</a>, NVIDIA GEAR</li>
+<li><a href="https://arxiv.org/abs/2604.15483" rel="noopener">π0.7</a> and <a href="https://arxiv.org/abs/2603.03596" rel="noopener">MEM</a>, Physical Intelligence</li>
+<li><a href="https://arxiv.org/abs/2606.10267" rel="noopener">What Matters in Orchestrating Robot Policies</a></li>
+<li><a href="https://arxiv.org/abs/2605.13119" rel="noopener">VLAs-as-Tools</a>, <a href="https://arxiv.org/abs/2607.18060" rel="noopener">RoboHarness</a>, <a href="https://arxiv.org/abs/2606.07723" rel="noopener">VoLo</a>, <a href="https://arxiv.org/abs/2608.29896" rel="noopener">EMERGE-Policy</a></li>
+<li><a href="https://arxiv.org/abs/2603.22435" rel="noopener">CaP-X</a>, <a href="https://www.vals.ai/benchmarks/robo_bench" rel="noopener">Vals Robo-bench</a>, <a href="https://ai-beat.github.io/news/2026/06/project-fetch-phase-two/" rel="noopener">Project Fetch, Phase Two (summary)</a></li>
+<li><a href="https://arxiv.org/abs/2409.01652" rel="noopener">ReKep</a>, <a href="https://arxiv.org/abs/2603.05757" rel="noopener">EmboAlign</a></li>
+<li><a href="https://pypi.org/project/inspect-robots/" rel="noopener">Inspect Robots</a>, <a href="https://zeli.app/story/49582582" rel="noopener">Robocurve: Astra vs Fable</a>, <a href="https://runtimewire.com/article/robocurve-opus-55-robotics-benchmark" rel="noopener">Robocurve: Opus 5.5 vs Astra</a>, <a href="https://www.neoteo.com/en/robocurves-roboharm-measured-three-robot-policies-in-staged-trials" rel="noopener">RoboHarm</a></li>
+<li><a href="https://www.humanoidsdaily.com/news/anthropic-claude-fable-5-2-robotics-robodojo" rel="noopener">Claude Fable 5.2 on RoboDojo</a>, Humanoids Daily</li>
+<li><a href="https://dealroom.co/news/talk-Jv5B5CEaPJI-why-general-purpose-llms-may-win-at-robotics-waddle-labs-and-robocurve/" rel="noopener">Waddle Labs and Robocurve, YC interview</a></li>
+<li><a href="https://ut-austin-rpl.github.io/publications/2026/06/18/xiao-arxiv26-enpire/" rel="noopener">ENPIRE</a>, <a href="https://arxiv.org/abs/2607.00272" rel="noopener">ASPIRE</a>, <a href="https://arxiv.org/abs/2605.00416" rel="noopener">Learning While Deploying</a></li>
+<li><a href="https://arxiv.org/abs/2401.12963" rel="noopener">AutoRT</a>, <a href="https://arxiv.org/abs/2311.01455" rel="noopener">RoboGen</a>, <a href="https://www.alphaxiv.org/abs/2604.09036" rel="noopener">V-CAGE</a></li>
+</ul>
+</div>
+</main>
+<footer class="foot">
+<span>&copy; 2026 Angel Xu</span>
+<ul class="foot-links"><li><a class="social-link" href="https://x.com/angel_flowstate" rel="me noopener" aria-label="@angel_flowstate on X" title="@angel_flowstate on X"><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.64 7.584H.47l8.6-9.835L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></a></li></ul>
+</footer>
+<script>
+(() => {
+  const root = document.documentElement, rail = document.getElementById("rail"), main = document.getElementById("main");
+  if (!rail || !main) return;
+  const wide = matchMedia("(min-width: 72rem)");
+  const openBtn = document.querySelector(".rail-open"), closeBtn = rail.querySelector(".rail-close"), scrim = document.querySelector(".rail-scrim");
+  const background = [...document.body.children].filter((node) => ![rail, openBtn, scrim].includes(node) && node.tagName !== "SCRIPT");
+  const originalInert = new Map(background.map((node) => [node, node.inert]));
+  let modalActive = false, previousOverflow;
+  const isOpen = () => (wide.matches ? !root.classList.contains("rail-closed") : root.classList.contains("rail-shown"));
+  const sync = () => {
+    const o = isOpen(), modal = o && !wide.matches;
+    openBtn.setAttribute("aria-expanded", String(o)); rail.inert = !o; scrim.hidden = !modal;
+    if (modal) { rail.setAttribute("role", "dialog"); rail.setAttribute("aria-modal", "true"); }
+    else { rail.removeAttribute("role"); rail.removeAttribute("aria-modal"); }
+    if (modal !== modalActive) {
+      background.forEach((node) => { node.inert = modal || originalInert.get(node); });
+      if (modal) {
+        previousOverflow = [root.style.overflow, document.body.style.overflow];
+        root.style.overflow = document.body.style.overflow = "hidden";
+      } else {
+        [root.style.overflow, document.body.style.overflow] = previousOverflow;
+      }
+      modalActive = modal;
+    }
+  };
+  const setOpen = (o, focus) => {
+    if (wide.matches) { root.classList.toggle("rail-closed", !o); try { localStorage.setItem("rail", o ? "open" : "closed"); } catch (e) {} }
+    else root.classList.toggle("rail-shown", o);
+    root.classList.remove("rail-away");
+    sync(); if (focus) (o ? closeBtn : openBtn).focus({ preventScroll: true });
+  };
+  openBtn.addEventListener("click", () => setOpen(true, true));
+  closeBtn.addEventListener("click", () => setOpen(false, true));
+  scrim.addEventListener("click", () => setOpen(false, true));
+  addEventListener("keydown", (e) => {
+    if (!modalActive) return;
+    if (e.key === "Escape") { e.preventDefault(); setOpen(false, true); return; }
+    if (e.key !== "Tab") return;
+    const focusable = [...rail.querySelectorAll('a[href], button:not([disabled]), [tabindex="0"]')].filter((node) => node.getClientRects().length);
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (!rail.contains(document.activeElement) || (e.shiftKey && document.activeElement === first)) {
+      e.preventDefault(); (e.shiftKey ? last : first).focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  });
+  wide.addEventListener("change", () => {
+    const active = document.activeElement;
+    root.classList.remove("rail-shown", "rail-away"); sync();
+    if (!isOpen() && rail.contains(active)) openBtn.focus({ preventScroll: true });
+    else if (isOpen() && active === openBtn) closeBtn.focus({ preventScroll: true });
+  });
+
+  // contents tree: follow the reader, open the branch they are in
+  const tree = rail.querySelector(".rail-tree"), links = [...tree.querySelectorAll("a")];
+  const heads = links.map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1))));
+  const fill = rail.querySelector(".fill"), meter = rail.querySelector(".rail-meter"), outs = document.querySelectorAll("[data-progress]");
+  const setBranch = (li, open) => { li.classList.toggle("is-open", open); li.querySelector(".kids-toggle").setAttribute("aria-expanded", String(open)); };
+  tree.querySelectorAll(".kids-toggle").forEach((b) => b.addEventListener("click", () => setBranch(b.parentElement, !b.parentElement.classList.contains("is-open"))));
+  rail.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener("click", (e) => {
+    if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    const target = document.getElementById(decodeURIComponent(a.hash.slice(1)));
+    if (!target) return;
+    if (!wide.matches) setOpen(false, false);
+    target.setAttribute("tabindex", "-1"); target.focus({ preventScroll: true });
+  }));
+  const more = () => tree.classList.toggle("has-more", tree.scrollTop + tree.clientHeight < tree.scrollHeight - 6);
+  tree.addEventListener("scroll", more, { passive: true });
+  let current = -2, queued = false;
+  const update = () => {
+    queued = false;
+    const end = main.offsetTop + main.offsetHeight - innerHeight, pct = Math.round(Math.max(0, Math.min(1, scrollY / Math.max(1, end))) * 100);
+    fill.style.width = pct + "%"; meter.setAttribute("aria-valuenow", pct); outs.forEach((o) => { o.textContent = pct + "%"; });
+    let idx = -1; const line = innerHeight * 0.3;
+    heads.forEach((h, i) => { if (h && h.getBoundingClientRect().top <= line) idx = i; });
+    if (idx === current) return;
+    current = idx;
+    links.forEach((a, i) => { a.classList.toggle("is-current", i === idx); if (i === idx) a.setAttribute("aria-current", "location"); else a.removeAttribute("aria-current"); });
+    const a = links[idx];
+    if (a) {
+      const branch = a.closest("li.has-kids"); if (branch) setBranch(branch, true);
+      const top = a.getBoundingClientRect().top - tree.getBoundingClientRect().top + tree.scrollTop, bottom = top + a.offsetHeight;      // keep the current line in view inside the list
+      if (top < tree.scrollTop + 8) tree.scrollTop = top - 8; else if (bottom > tree.scrollTop + tree.clientHeight - 8) tree.scrollTop = bottom - tree.clientHeight + 8;
+    }
+    more();
+  };
+  const ask = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+  addEventListener("scroll", ask, { passive: true }); addEventListener("resize", ask);
+
+  // the floating contents button steps aside while the reader scrolls down, and comes back on the way up
+  let lastY = scrollY;
+  addEventListener("scroll", () => {
+    const y = scrollY, d = y - lastY; if (Math.abs(d) < 8) return;
+    root.classList.toggle("rail-away", d > 0 && y > 320); lastY = y;
+  }, { passive: true });
+
+  // switching language keeps the reader at the same section (headings share ids across languages)
+  document.querySelectorAll("[data-lang-switch]").forEach((a) => a.addEventListener("click", () => {
+    const here = links[current]; if (here) a.href = a.href.split("#")[0] + here.hash;
+  }));
+
+  // share
+  const copy = rail.querySelector("[data-copy]"), label = copy.firstElementChild, idle = label.textContent; let timer;
+  copy.addEventListener("click", async () => {
+    const url = location.origin + location.pathname; let ok = false;
+    try { await navigator.clipboard.writeText(url); ok = true; }
+    catch (e) { const t = document.createElement("textarea"); t.value = url; t.style.cssText = "position:fixed;opacity:0"; rail.appendChild(t); t.select(); try { ok = document.execCommand("copy"); } catch (e2) {} t.remove(); copy.focus({ preventScroll: true }); }
+    label.textContent = ok ? copy.dataset.done : copy.dataset.fail;
+    clearTimeout(timer); timer = setTimeout(() => { label.textContent = idle; }, 2400);
+  });
+  sync(); update();
+})();
+</script>
+</body>
+</html>

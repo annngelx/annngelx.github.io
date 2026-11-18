@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Angel Xu</title>
+<meta name="description" content="Essays by Angel Xu on robotics and physical AI, where technology is heading, and the world at large.">
+<meta property="og:title" content="Angel Xu">
+<meta property="og:description" content="Essays by Angel Xu on robotics and physical AI, where technology is heading, and the world at large.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="en_US">
+<link rel="canonical" href="https://annngelx.github.io/">
+<meta property="og:url" content="https://annngelx.github.io/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="modulepreload" href="./assets/js/world.js">
+<link rel="preload" as="image" type="image/webp" href="./assets/img/world-marble.webp">
+<script>
+(() => {
+  const q = new URLSearchParams(location.search), asked = q.get("time"), hour = new Date().getHours();
+  let saved;
+  try { saved = localStorage.getItem("world-mood"); } catch (e) {}
+  const valid = (value) => value === "day" || value === "night";
+  const mood = valid(asked) ? asked : (valid(saved) ? saved : (hour >= 6 && hour < 18 ? "day" : "night"));
+  const intro = !q.has("still") && !matchMedia("(prefers-reduced-motion: reduce)").matches && (!q.has("manual") || q.has("intro"));
+  document.documentElement.dataset.worldMood = mood;
+  document.documentElement.dataset.worldPose = intro ? "intro" : "rest";
+  const poster = document.createElement("link");
+  poster.rel = "preload"; poster.as = "image"; poster.fetchPriority = "high";
+  poster.href = "./assets/img/world-" + mood + (matchMedia("(max-width: 40rem)").matches ? "-mobile" : "") + (intro ? "-intro" : "") + ".webp";
+  document.head.appendChild(poster);
+})();
+</script>
+<link rel="preload" href="assets/fonts/archivo-latin-standard-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body class="home-page">
+<a class="skip" href="#main">Skip to the writing</a>
+<section class="world" id="top" aria-label="Angel Xu">
+<canvas id="world" aria-hidden="true"></canvas>
+<div class="world-scrim" aria-hidden="true"></div>
+<header class="world-bar">
+<span class="home">Angel Xu</span>
+<nav aria-label="Main navigation"><a href="#writing">Writing</a><a href="#about">About</a><button class="world-mood" type="button" aria-label="Switch to night mode" title="Switch to night mode" hidden>
+<svg class="mood-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3.75"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+<svg class="mood-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.5 13.1A8.6 8.6 0 0 1 10.9 3.5a8.6 8.6 0 1 0 9.6 9.6Z"/></svg>
+</button></nav>
+</header>
+<p class="world-loading" role="status" hidden>Loading the world</p>
+<div class="world-copy">
+<p class="eyebrow">Writing &amp; thinking</p>
+<h1>Angel Xu</h1>
+<p class="lede">Essays on robotics and physical AI, where technology is heading, and the world at large.</p>
+<p class="actions"><a class="cta" href="writing/agentic-robotics/">Read the latest essay</a></p>
+</div>
+<a class="world-scroll" href="#writing"><span>Scroll down for all writing</span><svg class="scroll-arrow" viewBox="0 0 20 28" fill="none" aria-hidden="true"><path d="M10 2v22m-6-6 6 6 6-6"/></svg></a>
+</section>
+<script>
+(async () => {
+const root = document.querySelector(".world"), html = document.documentElement, toggle = root.querySelector(".world-mood");
+const canvas = document.getElementById("world");
+const q = new URLSearchParams(location.search), still = q.has("still"), stillTime = Number.parseFloat(q.get("still"));
+const reduced = still || matchMedia("(prefers-reduced-motion: reduce)").matches;
+root.classList.toggle("is-static", reduced);
+let seen = false;
+try { seen = sessionStorage.getItem("world-seen") === "1"; sessionStorage.setItem("world-seen", "1"); } catch (e) {}
+// The head selects the mood before the first paint, including the loading preview.
+let mood = html.dataset.worldMood || "day";
+const loading = root.querySelector(".world-loading");
+const set = (s) => { root.classList.remove("is-loading", "is-intro", "is-ready"); root.classList.add("is-" + s); loading.hidden = s !== "loading"; };
+const showMood = () => {
+  html.dataset.worldMood = root.dataset.mood = mood;
+  const label = "Switch to " + (mood === "day" ? "night" : "day") + " mode";
+  toggle.setAttribute("aria-label", label); toggle.title = label;
+};
+const busy = (value) => { toggle.disabled = value; toggle.setAttribute("aria-busy", String(value)); };
+let world = null, skipped = false, generation = 0, timer, modulePromise;
+const skip = () => { skipped = true; if (world) world.skip(); set("ready"); };
+addEventListener("keydown", (e) => { if (e.key === "Escape") skip(); });
+const start = async () => {
+  const run = ++generation, target = canvas;
+  const current = () => run === generation && target === canvas;
+  const finish = () => { clearTimeout(timer); busy(false); };
+  const fail = () => { if (!current()) return; html.classList.add("no-webgl"); set("ready"); finish(); };
+  set("loading"); busy(true); clearTimeout(timer);
+  target.addEventListener("world:state", (e) => { if (current()) set(e.detail); });
+  target.addEventListener("world:fail", fail);
+  target.addEventListener("world:loaded", () => {
+    if (!current()) return;
+    html.classList.remove("no-webgl"); root.classList.add("has-frame"); finish();
+    if (skipped) world?.skip();
+  });
+  timer = setTimeout(() => { if (current() && !root.classList.contains("has-frame")) { skip(); fail(); } }, 15000);
+  try {
+    const { startWorld } = await (modulePromise ||= import("./assets/js/world.js"));
+    if (!current()) return;
+    world = startWorld(target, {
+      reducedMotion: reduced, startTime: still && Number.isFinite(stillTime) && stillTime >= 0 ? stillTime : (reduced ? 9 : 0),
+      intro: skipped ? 0 : (seen ? 3.2 : 7.5), quality: q.get("q") || undefined,
+      manual: q.has("manual"), manualIntro: q.has("intro"), time: mood,
+    });
+    if (!world) fail(); else if (skipped) world.skip();
+  } catch (err) { console.warn(err); fail(); }
+};
+toggle.addEventListener("click", () => {
+  if (toggle.disabled) return;
+  mood = mood === "day" ? "night" : "day";
+  showMood();
+  try { localStorage.setItem("world-mood", mood); } catch (e) {}
+  try { const url = new URL(location.href); url.searchParams.set("time", mood); history.replaceState(history.state, "", url); } catch (e) {}
+  world?.setMood(mood);
+  if (!world) html.dataset.worldPose = "rest";
+});
+showMood(); toggle.hidden = false; start();
+})();
+</script>
+<main id="main" tabindex="-1">
+<section class="section" id="writing">
+<h2>Writing</h2>
+<article class="entry">
+<p class="entry-meta"><time datetime="2026-11-17">17 November 2026</time><span>Robotics and physical AI</span></p>
+<h3><a href="writing/agentic-robotics/">How robots become agentic: four approaches</a></h3>
+<p>Layered orchestration, code as policy, constraint-mediated generation and direct control: what each does, the evidence so far, and where the lines blur. 16-minute read.</p>
+<p class="entry-alt"><a href="zh/writing/agentic-robotics/" lang="zh-Hans" hreflang="zh-Hans">中文版：How robots become agentic: four approaches</a></p>
+</article>
+</section>
+<section class="section about" id="about">
+<h2>About</h2>
+<p>Angel Xu is the founder and CEO of Spatial Superintelligence Inc. The essays here cover robotics and physical AI, where technology is heading, and the world at large.</p>
+<ul class="links"><li><a href="https://x.com/angel_flowstate" rel="me noopener" aria-label="@angel_flowstate on X"><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.64 7.584H.47l8.6-9.835L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg><span>@angel_flowstate</span></a></li></ul>
+</section>
+</main>
+<footer class="foot">
+<span>&copy; 2026 Angel Xu</span>
+<ul class="foot-links"><li><a class="social-link" href="https://x.com/angel_flowstate" rel="me noopener" aria-label="@angel_flowstate on X" title="@angel_flowstate on X"><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.64 7.584H.47l8.6-9.835L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></a></li></ul>
+</footer>
+</body>
+</html>

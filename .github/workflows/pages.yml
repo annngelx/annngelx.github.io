@@ -1,0 +1,56 @@
+# Builds the pages and publishes the site/ folder to GitHub Pages on every push to main.
+# One-time setup: repository Settings > Pages > Build and deployment > Source: "GitHub Actions".
+name: Build and deploy the site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deployment finish; queue at most the newest one behind it.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the Markdown library
+        run: pip install -r source/requirements.txt
+      - name: Build the pages from source/content
+        run: python3 source/build.py
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+      - name: Build the 3D scene
+        working-directory: source
+        run: |
+          npm ci
+          npm run build:world
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload the site folder
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
