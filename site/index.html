@@ -67,6 +67,12 @@ try { seen = sessionStorage.getItem("world-seen") === "1"; sessionStorage.setIte
 // The head selects the mood before the first paint, including the loading preview.
 let mood = html.dataset.worldMood || "day";
 const loading = root.querySelector(".world-loading");
+// On a portrait screen the scene keeps its subject between the navigation and the text below it.
+const bar = root.querySelector(".world-bar"), copy = root.querySelector(".world-copy");
+const band = () => {
+  const r = root.getBoundingClientRect(), b = bar.getBoundingClientRect(), h = r.height || 1;
+  return [((b.top + b.bottom) / 2 - r.top) / h, (copy.getBoundingClientRect().top - r.top) / h];
+};
 const set = (s) => { root.classList.remove("is-loading", "is-intro", "is-ready"); root.classList.add("is-" + s); loading.hidden = s !== "loading"; };
 const showMood = () => {
   html.dataset.worldMood = root.dataset.mood = mood;
@@ -97,7 +103,7 @@ const start = async () => {
     world = startWorld(target, {
       reducedMotion: reduced, startTime: still && Number.isFinite(stillTime) && stillTime >= 0 ? stillTime : (reduced ? 9 : 0),
       intro: skipped ? 0 : (seen ? 3.2 : 7.5), quality: q.get("q") || undefined,
-      manual: q.has("manual"), manualIntro: q.has("intro"), time: mood,
+      manual: q.has("manual"), manualIntro: q.has("intro"), time: mood, band,
     });
     if (!world) fail(); else if (skipped) world.skip();
   } catch (err) { console.warn(err); fail(); }
@@ -112,6 +118,7 @@ toggle.addEventListener("click", () => {
   if (!world) html.dataset.worldPose = "rest";
 });
 showMood(); toggle.hidden = false; start();
+if (document.fonts) document.fonts.ready.then(() => world?.reframe());
 })();
 </script>
 <main id="main" tabindex="-1">

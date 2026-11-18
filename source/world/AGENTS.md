@@ -12,5 +12,6 @@
 - Keep the homepage navigation transparent over the scene, including loading. No opaque intro bars behind it. Reveal WebGL only after a successful full frame; the day/night loading posters must match the initial camera pose.
 - Keep the sun/moon switch in the top-right navigation and remember a visitor's explicit choice. Blend day/night lighting in the same running scene: never rebuild it, replace its canvas, reset its clock or replay the intro when switching. Keep ships, arm, cat, cloth, and camera motion continuous.
 - Keep the writing scroll cue centered at the bottom. The latest-essay button has no arrow.
+- On phones the name, lede and button must stay readable. The user reported them colliding with the arm, globe and cat. The portrait camera now fits those subjects into the band between the navigation and the text (`fitTall` in `main.js`, fed by `band` in the home page script), and the text sits over open water with a veil behind it. Do not move the subjects back behind the text or weaken the veil without checking a phone-sized capture in both moods.
 
 After scene changes, rebuild `site/assets/js/world.js` and refresh the scene preview images in `site/assets/img/world-*.webp` when their appearance changes. Check day/night, desktop/portrait, and loading as well as the settled scene.
