@@ -29,27 +29,29 @@ cd site && python3 -m http.server 8000
 
 Then open http://localhost:8000. Opening `index.html` straight from the disk won't run the 3D scene, because browsers block script modules on `file://` pages.
 
-## Publish on GitHub Pages
+## Publish
 
-The site uses the `annngelx` organization, managed by the `maxing999` account.
+The site is hosted on Vercel (project `angelxu` in the `maxing999` account), built from this repository. The repository belongs to the `annngelx` organization.
 
 - Primary website: https://angelxu.ai/
 - Repository: https://github.com/annngelx/annngelx.github.io
-- Deployment source: GitHub Actions, configured in repository Settings > Pages.
+- Vercel project: https://vercel.com/maxing999s-projects/angelxu
 
-Every push to `main` runs **Build and deploy the site**, rebuilding the essays and 3D bundle before publishing `site/`. To publish an update from this folder:
+Every push to `main` deploys to production on Vercel. Pushes to other branches get their own preview link, shown on the commit in GitHub. To publish an update from this folder:
 
 ```
-git add README.md .github source site
+git add README.md vercel.json .github source site
 git commit -m "Update site"
 git push
 ```
 
-Check the repository's Actions tab for the result. A failed build leaves the previous deployment in place. The workflow can also be run manually from that tab.
+Vercel runs `source/vercel-build.sh` (see `vercel.json`): it builds the 3D module first, then the pages, and serves `site/`. A failed build leaves the previous deployment in place.
 
-The custom domain is `angelxu.ai`, with DNS managed in Cloudflare. Its apex points to GitHub Pages, and `www` points to `annngelx.github.io`; both use DNS-only records. GitHub Pages redirects `www` and the original `annngelx.github.io` address to the primary domain. `SITE_URL` at the top of `source/build.py` supplies the canonical, language-alternate and share URLs. The GitHub Actions publishing workflow uses the repository's Pages domain setting, so it does not require a `CNAME` file.
+**Caching.** Every link to a file under `assets/` carries `?v=` plus a hash of the file's contents (`ver()` in `source/build.py`, which also rewrites the font and image URLs in `site.css`). `vercel.json` lets browsers keep anything under `/assets/` for a year, so repeat visits load the scene, textures and fonts from the browser. Pages themselves are rechecked on every visit. If you add an asset, link it through `ver()` or it may stay cached in its old form.
 
-The same `site/` folder also works on Netlify, Vercel or Cloudflare Pages if you ever move.
+**Domain.** DNS for `angelxu.ai` is in Cloudflare, DNS only (not proxied): the apex is an A record to `216.198.79.1` and `www` is a CNAME to `f3ae834d44949e1b.vercel-dns-017.com`. Vercel redirects `www` to the apex and issues the HTTPS certificate. `SITE_URL` at the top of `source/build.py` supplies the canonical, language-alternate and share URLs.
+
+**GitHub Pages** still deploys the same build from `.github/workflows/pages.yml` and keeps `angelxu.ai` as its custom domain, which makes `annngelx.github.io` redirect to angelxu.ai. To return to GitHub Pages, point the apex back to `185.199.108.153`, `.109`, `.110` and `.111` (plus AAAA `2606:50c0:8000::153` to `8003::153`) and `www` to `annngelx.github.io`.
 
 ## About text, topics and profile links
 
