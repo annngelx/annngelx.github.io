@@ -3,11 +3,30 @@
 Each essay is content/<slug>.md (English) and, optionally, content/<slug>.zh.md (Chinese).
 Run:  python3 build.py
 """
-import re, pathlib, markdown
+import re, json, pathlib, hashlib, markdown
 import html as html_lib
 
 ROOT = pathlib.Path(__file__).parent
 SITE = ROOT.parent / "site"
+
+# Every file under assets/ is linked with ?v=<hash of its contents>. The host can then let browsers keep
+# assets for a year (see vercel.json): a changed file gets a new address, so visitors never see a stale one.
+# The 3D module must be built before this script runs, so its hash is the one that ships.
+_hashes = {}
+def ver(rel):
+    """`rel` (a path under site/, such as "assets/css/site.css") with its content-hash version appended."""
+    rel = rel.split("?")[0]
+    if rel not in _hashes:
+        _hashes[rel] = hashlib.sha256((SITE / rel).read_bytes()).hexdigest()[:10]
+    return f"{rel}?v={_hashes[rel]}"
+
+def version_stylesheet():
+    """Version the fonts and images that site.css points at, so the stylesheet's own hash changes with them."""
+    css_path = SITE / "assets/css/site.css"
+    css = css_path.read_text(encoding="utf-8")
+    fix = lambda m: f"url({m.group(1)}{ver('assets/' + m.group(2))[len('assets/'):]})"
+    new = re.sub(r"url\((\.\./)((?:fonts|img)/[^)?\s\"']+)(?:\?v=[0-9a-f]+)?\)", fix, css)
+    if new != css: css_path.write_text(new, encoding="utf-8")
 
 # ---------- settings ----------
 AUTHOR = "Angel Xu"
@@ -97,8 +116,8 @@ def head(title, desc, prefix, lang="en", kind="website", path="", alternates=Non
 {chr(10).join(more)}
 <link rel="icon" href="{prefix}favicon.svg" type="image/svg+xml">
 {early}
-<link rel="preload" href="{prefix}assets/fonts/archivo-latin-standard-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="{prefix}assets/css/site.css">{extra}
+<link rel="preload" href="{prefix}{ver('assets/fonts/archivo-latin-standard-normal.woff2')}" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{prefix}{ver('assets/css/site.css')}">{extra}
 </head>"""
 
 def lang_link(prefix, lang, slug, cls=""):
@@ -388,7 +407,7 @@ def build_article(a, lang, langs):
     html = md.convert(md_text.replace("{{DIAGRAM}}", "@@DIAGRAM@@"))
     html = html.replace("<p>@@DIAGRAM@@</p>", diagram(lang))
     path = page_path(slug, lang); prefix = up(path)
-    html = html.replace('src="/assets/', f'src="{prefix}assets/')
+    html = re.sub(r'src="/(assets/[^"?]+)"', lambda m: f'src="{prefix}{ver(m.group(1))}"', html)
     html = re.sub(r"<table>.*?</table>", label_cells, html, flags=re.S)
     html = html.replace("<table>", '<div class="table-wrap"><table>').replace("</table>", "</table></div>")
     html = re.sub(r"<p><strong>([^<]*[^<.。])</strong></p>", r'<p class="label">\1</p>', html)      # a bold line on its own (not a sentence) is a small heading
@@ -445,8 +464,10 @@ def build_home(articles):
     links = profile_links()
     links = f"\n{links}" if links else ""
     latest = articles[0]
-    world_head = """<link rel="modulepreload" href="./assets/js/world.js">
-<link rel="preload" as="image" type="image/webp" href="./assets/img/world-marble.webp">
+    posters = {f"{m}{d}{i}": ver(f"assets/img/world-{m}{d}{i}.webp").split("?v=")[1]
+               for m in ("day", "night") for d in ("", "-mobile") for i in ("", "-intro")}
+    world_head = """<link rel="modulepreload" href="./@@WORLD@@">
+<link rel="preload" as="image" type="image/webp" href="./@@MARBLE@@">
 <script>
 (() => {
   const q = new URLSearchParams(location.search), asked = q.get("time"), hour = new Date().getHours();
@@ -459,10 +480,13 @@ def build_home(articles):
   document.documentElement.dataset.worldPose = intro ? "intro" : "rest";
   const poster = document.createElement("link");
   poster.rel = "preload"; poster.as = "image"; poster.fetchPriority = "high";
-  poster.href = "./assets/img/world-" + mood + (matchMedia("(max-width: 40rem)").matches ? "-mobile" : "") + (intro ? "-intro" : "") + ".webp";
+  const name = mood + (matchMedia("(max-width: 40rem)").matches ? "-mobile" : "") + (intro ? "-intro" : "");
+  poster.href = "./assets/img/world-" + name + ".webp?v=" + @@POSTERS@@[name];
   document.head.appendChild(poster);
 })();
 </script>"""
+    world_head = (world_head.replace("@@WORLD@@", ver("assets/js/world.js")).replace("@@MARBLE@@", ver("assets/img/world-marble.webp"))
+                  .replace("@@POSTERS@@", json.dumps(posters, separators=(",", ":"))))
     page = f"""{head(AUTHOR, f'Essays by {AUTHOR} on robotics and physical AI, where technology is heading, and the world at large.', '', early=world_head)}
 <body class="home-page">
 <a class="skip" href="#main">Skip to the writing</a>
@@ -528,12 +552,12 @@ const start = async () => {{
   }});
   timer = setTimeout(() => {{ if (current() && !root.classList.contains("has-frame")) {{ skip(); fail(); }} }}, 15000);
   try {{
-    const {{ startWorld }} = await (modulePromise ||= import("./assets/js/world.js"));
+    const {{ startWorld }} = await (modulePromise ||= import("./{ver('assets/js/world.js')}"));
     if (!current()) return;
     world = startWorld(target, {{
       reducedMotion: reduced, startTime: still && Number.isFinite(stillTime) && stillTime >= 0 ? stillTime : (reduced ? 9 : 0),
       intro: skipped ? 0 : (seen ? 3.2 : 7.5), quality: q.get("q") || undefined,
-      manual: q.has("manual"), manualIntro: q.has("intro"), time: mood, band,
+      manual: q.has("manual"), manualIntro: q.has("intro"), time: mood, band, marble: "./{ver('assets/img/world-marble.webp')}",
     }});
     if (!world) fail(); else if (skipped) world.skip();
   }} catch (err) {{ console.warn(err); fail(); }}
@@ -602,6 +626,7 @@ a {{ color: #8a651a; }}
 """
 
 def main():
+    version_stylesheet()
     for a in ARTICLES:
         a["langs"] = [l for l in LANGS if l in a and source(a["slug"], l).exists()]
         for lang in a["langs"]:

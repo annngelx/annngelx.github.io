@@ -162,14 +162,15 @@ export function leafTexture(rand) {
 // Shared by architectural stone and the celestial globe; loaded or baked once.
 let marbleCanvas, marblePreparation;
 
-/** Decode the exact baked pixels before construction; missing assets use the bake below. */
-export function prepareMarbleTexture() {
+/** Decode the exact baked pixels before construction; missing assets use the bake below.
+ *  `url` is the page's versioned address for the texture, so it matches the page's preload and cache. */
+export function prepareMarbleTexture(url) {
   if (marbleCanvas?.width === 1024) return Promise.resolve(true);
   return marblePreparation ??= (async () => {
     let timeout;
     try {
       const image = new Image(); image.decoding = 'async';
-      image.src = new URL('../img/world-marble.webp', import.meta.url).href;
+      image.src = url || new URL('../img/world-marble.webp', import.meta.url).href;
       // This is an optimization: a stalled download must not hold up the scene.
       await Promise.race([
         image.decode(),
