@@ -13,8 +13,8 @@
 <link rel="canonical" href="https://angelxu.ai/">
 <meta property="og:url" content="https://angelxu.ai/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="modulepreload" href="./assets/js/world.js">
-<link rel="preload" as="image" type="image/webp" href="./assets/img/world-marble.webp">
+<link rel="modulepreload" href="./assets/js/world.js?v=48bbec2ae8">
+<link rel="preload" as="image" type="image/webp" href="./assets/img/world-marble.webp?v=8a7a899afa">
 <script>
 (() => {
   const q = new URLSearchParams(location.search), asked = q.get("time"), hour = new Date().getHours();
@@ -27,12 +27,13 @@
   document.documentElement.dataset.worldPose = intro ? "intro" : "rest";
   const poster = document.createElement("link");
   poster.rel = "preload"; poster.as = "image"; poster.fetchPriority = "high";
-  poster.href = "./assets/img/world-" + mood + (matchMedia("(max-width: 40rem)").matches ? "-mobile" : "") + (intro ? "-intro" : "") + ".webp";
+  const name = mood + (matchMedia("(max-width: 40rem)").matches ? "-mobile" : "") + (intro ? "-intro" : "");
+  poster.href = "./assets/img/world-" + name + ".webp?v=" + {"day":"2cc41ffbc0","day-intro":"033605d2d0","day-mobile":"fb4bc6965a","day-mobile-intro":"6a3ae59856","night":"917faf07f2","night-intro":"1a945531d0","night-mobile":"2ae7cc48ff","night-mobile-intro":"5e32569a07"}[name];
   document.head.appendChild(poster);
 })();
 </script>
-<link rel="preload" href="assets/fonts/archivo-latin-standard-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/site.css">
+<link rel="preload" href="assets/fonts/archivo-latin-standard-normal.woff2?v=e3a28eade2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css?v=559173dcbe">
 </head>
 <body class="home-page">
 <a class="skip" href="#main">Skip to the writing</a>
@@ -98,12 +99,12 @@ const start = async () => {
   });
   timer = setTimeout(() => { if (current() && !root.classList.contains("has-frame")) { skip(); fail(); } }, 15000);
   try {
-    const { startWorld } = await (modulePromise ||= import("./assets/js/world.js"));
+    const { startWorld } = await (modulePromise ||= import("./assets/js/world.js?v=48bbec2ae8"));
     if (!current()) return;
     world = startWorld(target, {
       reducedMotion: reduced, startTime: still && Number.isFinite(stillTime) && stillTime >= 0 ? stillTime : (reduced ? 9 : 0),
       intro: skipped ? 0 : (seen ? 3.2 : 7.5), quality: q.get("q") || undefined,
-      manual: q.has("manual"), manualIntro: q.has("intro"), time: mood, band,
+      manual: q.has("manual"), manualIntro: q.has("intro"), time: mood, band, marble: "./assets/img/world-marble.webp?v=8a7a899afa",
     });
     if (!world) fail(); else if (skipped) world.skip();
   } catch (err) { console.warn(err); fail(); }

@@ -26,7 +26,8 @@ const TIERS = {
 /**
  * Start the landing scene on `canvas`.
  * opts: { reducedMotion, startTime, intro (seconds, 0 = none), quality, manual, time ('day' | 'night'; default: the visitor's clock),
- *         band (function returning [top, bottom]: the part of the canvas height left clear between the page's navigation and its text) }
+ *         band (function returning [top, bottom]: the part of the canvas height left clear between the page's navigation and its text),
+ *         marble (the page's versioned address for world-marble.webp) }
  * Fires on the canvas: world:loaded (detail: 'day' | 'night'), world:state ('intro' | 'ready'), world:fail.
  * Returns { skip(), setPaused(value), setMood(name), reframe(), dispose(), paused } or null when WebGL 2 is unavailable.
  */
@@ -47,7 +48,7 @@ export function startWorld(canvas, opts = {}) {
   const run = async () => {
     if (life.disposed) return;
     try {
-      await prepareMarbleTexture();
+      await prepareMarbleTexture(opts.marble);
       if (!life.disposed) build(canvas, renderer, opts, emit, api, life);
     } catch (err) { console.warn('[world]', err); emit('world:fail'); }
   };

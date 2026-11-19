@@ -16,8 +16,8 @@
 <link rel="alternate" hreflang="zh-Hans" href="https://angelxu.ai/zh/writing/agentic-robotics/">
 <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
 
-<link rel="preload" href="../../../assets/fonts/archivo-latin-standard-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../../../assets/css/site.css">
+<link rel="preload" href="../../../assets/fonts/archivo-latin-standard-normal.woff2?v=e3a28eade2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../../assets/css/site.css?v=559173dcbe">
 <script>document.documentElement.classList.add("js");try{if(localStorage.getItem("rail")==="closed")document.documentElement.classList.add("rail-closed")}catch(e){}</script>
 </head>
 <body class="has-rail">
@@ -111,12 +111,12 @@
 </tbody>
 </table></div>
 <figure class="shot">
-<img src="../../../assets/img/envisioning-abstract.webp" alt="Grid Robotics 的 Envisioning Agentic Robotics 在 arXiv 上的摘要页，2026 年 11 月 13 日提交" width="1180" height="360" loading="lazy">
+<img src="../../../assets/img/envisioning-abstract.webp?v=d36f9d55aa" alt="Grid Robotics 的 Envisioning Agentic Robotics 在 arXiv 上的摘要页，2026 年 11 月 13 日提交" width="1180" height="360" loading="lazy">
 <figcaption><em>Envisioning Agentic Robotics</em>（Grid Robotics：Qingfeng Lan 等，2026 年 11 月 13 日提交）开篇将 agentic robotics 的兴起归因于 GPT-6 Astra。图片为 <a href="https://arxiv.org/abs/2611.18359" rel="noopener">arXiv 摘要页</a>截图，CC BY。</figcaption>
 </figure>
 
 <figure>
-<img src="../../../assets/img/envisioning-fig4-execution-paths.webp" alt="Envisioning Agentic Robotics 图 4：Layered orchestration、Direct control 和 Code as policy，是从 S2 到物理世界的三条执行路径" width="1260" height="514" loading="lazy">
+<img src="../../../assets/img/envisioning-fig4-execution-paths.webp?v=8891dad2c6" alt="Envisioning Agentic Robotics 图 4：Layered orchestration、Direct control 和 Code as policy，是从 S2 到物理世界的三条执行路径" width="1260" height="514" loading="lazy">
 <figcaption><em>Envisioning Agentic Robotics</em> 的图 4，标题为“Three typical execution paths”，对应本文的路线 1、4、2。作者指出，一个系统可以在同一项任务中用到这三条路径。图片来自 <a href="https://arxiv.org/html/2611.18359" rel="noopener">arXiv HTML 版</a>，CC BY。</figcaption>
 </figure>
 
@@ -135,7 +135,7 @@
 <li><a href="https://arxiv.org/abs/2604.15483" rel="noopener">π0.7</a>（Physical Intelligence，2026 年 4 月）。这个动作模型在设计时就考虑了如何接受上层指导：它能接收语言指导、策略元数据，以及小型世界模型在 runtime 生成的子目标图像。</li>
 </ul>
 <figure>
-<img src="../../../assets/img/gr00t2-agentic-hanoi.webp" alt="NVIDIA 的 agentic GR00T 2 演示：两只机械臂在汉诺塔上方" width="1456" height="819" loading="lazy">
+<img src="../../../assets/img/gr00t2-agentic-hanoi.webp?v=bef455b076" alt="NVIDIA 的 agentic GR00T 2 演示：两只机械臂在汉诺塔上方" width="1456" height="819" loading="lazy">
 <figcaption>NVIDIA 的 agentic GR00T 2 演示画面：前沿推理 agent 规划汉诺塔的每一步，再调用 GR00T 2 完成抓取。按 NVIDIA 的说法，agent 决定做什么，GR00T 2 决定怎么做。图片和演示视频见 <a href="https://research.nvidia.com/labs/gear/gr00t-2" rel="noopener">GR00T 2 项目主页</a>。</figcaption>
 </figure>
 
@@ -178,7 +178,7 @@
 </li>
 </ul>
 <figure>
-<img src="../../../assets/img/vals-robobench-tasks.webp" alt="Vals Robo-bench 的三项公开任务：arm balance scale、arm Lego manual、humanoid ninja course" width="1411" height="383" loading="lazy">
+<img src="../../../assets/img/vals-robobench-tasks.webp?v=2c7f4f2094" alt="Vals Robo-bench 的三项公开任务：arm balance scale、arm Lego manual、humanoid ninja course" width="1411" height="383" loading="lazy">
 <figcaption>Vals Robo-bench 的三项公开任务。coding agent 只拿到机器人的数据手册，全部感知和控制代码都要自己写。在 humanoid ninja course 这类人形机器人任务上，没有模型拿到 2 分。图片来自 <a href="https://www.vals.ai/benchmarks/robo_bench" rel="noopener">Vals AI</a>。</figcaption>
 </figure>
 
@@ -192,7 +192,7 @@
 <li><a href="https://arxiv.org/abs/2603.05757" rel="noopener">EmboAlign</a>（Northwestern 和 Stanford，2026 年 3 月）把这条路线和视频生成模型结合起来。VLM 将空间、运动学和安全要求写成约束，先据此筛选生成的视频 rollout，再优化机器人轨迹，修正将动作映射到机器人时产生的 retargeting 误差。研究在六项真实机器人任务上进行了测试。</li>
 </ul>
 <figure>
-<img src="../../../assets/img/rekep-method.webp" alt="ReKep 的流程：视觉模型找出关键点，VLM 编写约束函数，约束优化求解器生成倒茶动作" width="1411" height="631" loading="lazy">
+<img src="../../../assets/img/rekep-method.webp?v=cc9cc2f552" alt="ReKep 的流程：视觉模型找出关键点，VLM 编写约束函数，约束优化求解器生成倒茶动作" width="1411" height="631" loading="lazy">
 <figcaption>ReKep 处理“Pour tea into the cup”任务的流程：VLM 将关键点约束写成 Python 函数，约束优化求解器据此生成夹爪动作。图片来自 <a href="https://rekep-robot.github.io/" rel="noopener">ReKep 项目主页</a>。</figcaption>
 </figure>
 
@@ -216,7 +216,7 @@
 </li>
 </ul>
 <figure class="post">
-<img src="../../../assets/img/robocurve-astra-fable-post.webp" alt="Jay Chooi 发布的测试结果：GPT-6 Astra 在一项机器人控制任务上的完成率为 95%，Fable 5.1 为 40%，图中对比了完成率与 API 成本" width="845" height="650" loading="lazy">
+<img src="../../../assets/img/robocurve-astra-fable-post.webp?v=fd423fe50e" alt="Jay Chooi 发布的测试结果：GPT-6 Astra 在一项机器人控制任务上的完成率为 95%，Fable 5.1 为 40%，图中对比了完成率与 API 成本" width="845" height="650" loading="lazy">
 <figcaption>Robocurve 创始人 Jay Chooi 公布的“把积木放进碗里”测试：GPT-6 Astra 的完成率为 95%，Claude Fable 5.1 为 40%；后者的成本约是前者的 2.3 倍。<a href="https://x.com/chooi_jeq/status/2096064315115839904" rel="noopener">X 上的帖子</a>，2026 年 9 月 5 日。</figcaption>
 </figure>
 
@@ -229,7 +229,7 @@
 <li><strong>安全。</strong> 在 Robocurve 的 <a href="https://www.neoteo.com/en/robocurves-roboharm-measured-three-robot-policies-in-staged-trials" rel="noopener">RoboHarm</a> 测试中，模型很少拒绝有害指令。测试包含五种危险指令，Astra 在 100 次试验中尝试执行了 97 次。Fable 5.1 拒绝了 20 次，全部发生在要求它刺向婴儿玩偶的任务中。</li>
 </ul>
 <figure class="post">
-<img src="../../../assets/img/robocurve-roboharm-post.webp" alt="Jay Chooi 发布的 RoboHarm 测试图表：对比 GPT-6 Astra、Fable 5.1 和 MolmoAct2 尝试执行有害动作及执行成功的情况，并附有试验画面" width="845" height="714" loading="lazy">
+<img src="../../../assets/img/robocurve-roboharm-post.webp?v=f734801b53" alt="Jay Chooi 发布的 RoboHarm 测试图表：对比 GPT-6 Astra、Fable 5.1 和 MolmoAct2 尝试执行有害动作及执行成功的情况，并附有试验画面" width="845" height="714" loading="lazy">
 <figcaption>Robocurve 公布的 RoboHarm 结果：Astra 在 97% 的试验中尝试执行有害动作，其中 62% 的尝试成功了。Fable 5.1 则直接拒绝了玩偶任务。<a href="https://x.com/chooi_jeq/status/2101118049944543545" rel="noopener">X 上的帖子</a>，2026 年 9 月。</figcaption>
 </figure>
 
@@ -249,7 +249,7 @@
 </li>
 </ul>
 <figure class="post">
-<img src="../../../assets/img/jimfan-enpire-post.webp" alt="Jim Fan 介绍 ENPIRE：让 8 个 Codex agent 使用一批机器人、GPU 和一定的 token 预算，图中有机械手操作针盒的视频画面" width="845" height="749" loading="lazy">
+<img src="../../../assets/img/jimfan-enpire-post.webp?v=d32ac718f6" alt="Jim Fan 介绍 ENPIRE：让 8 个 Codex agent 使用一批机器人、GPU 和一定的 token 预算，图中有机械手操作针盒的视频画面" width="845" height="749" loading="lazy">
 <figcaption>NVIDIA 的 Jim Fan 用“AutoResearch in the physical world”介绍 ENPIRE：八个 Codex agent，配上一批机器人、GPU 和一定的 token 预算，在真实环境中做研究。<a href="https://x.com/DrJimFan/status/2066921736369766762" rel="noopener">X 上的帖子</a>，2026 年 6 月。</figcaption>
 </figure>
 

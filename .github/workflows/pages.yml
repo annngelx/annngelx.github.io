@@ -26,14 +26,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Install the Markdown library
-        run: pip install -r source/requirements.txt
-      - name: Build the pages from source/content
-        run: python3 source/build.py
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -45,6 +37,14 @@ jobs:
         run: |
           npm ci
           npm run build:world
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the Markdown library
+        run: pip install -r source/requirements.txt
+      - name: Build the pages from source/content
+        run: python3 source/build.py
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload the site folder
